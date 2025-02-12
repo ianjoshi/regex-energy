@@ -1,2 +1,2 @@
-# sustainablese-g1-p1
-SustainableSE G1 P1
+# SustainableSE Group 1 Project 1
+SustainableSE Group 1 Project 1
