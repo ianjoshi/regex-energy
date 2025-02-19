@@ -1,34 +1,49 @@
+from energibridge_executor import EnergiBridgeExecutor
 import time
 
-class EnergiBridgeExperiment:
+class EnergyExperiment:
     """
     A class for running controlled performance measurement experiments on a system.
     The experiment includes a warm-up phase, task execution, and rest periods between runs.
     """
+    def __init__(self, num_runs=30, warmup_duration=300, rest_duration=60, measurement_duration=10):
+        """
+        Initializes the experiment with the necessary parameters.
 
-    def run_experiment(self, num_runs=30, rest_duration=60):
+        Parameters:
+        - num_runs (int): Number of times the task measurement should be executed.
+        - warmup_duration (int): Warm up period (in seconds) before measurements.
+        - rest_duration (int): Rest period (in seconds) between runs.
+        - measurement_duration (int): Maximum duration of each measurement in seconds.
+        """
+        self.num_runs = num_runs
+        self.warmup_duration = warmup_duration
+        self.rest_duration = rest_duration
+        self.executor = EnergiBridgeExecutor(max_measurement_duration=measurement_duration)
+
+    def run_experiment(self):
         """
         Orchestrates and runs the experiment sequence:
         1. Warns the user and prepares the environment.
         2. Warms up the CPU by running Fibonacci calculations.
         3. Runs the task measurement multiple times with rest intervals.
-        
-        Parameters:
-        - num_runs (int): Number of times the task measurement should be executed.
-        - rest_duration (int): Rest period (in seconds) between runs.
         """
         self._warn_and_prepare()
         self._warmup_fibonacci()
+        self.executor.start_service()
 
-        for i in range(num_runs):
-            print(f"----- Run {i+1} of {num_runs} -----")
-            self._run_task_and_measurement()
+        for i in range(self.num_runs):
+            print(f"----- Run {i+1} of {self.num_runs} -----")
+
+            self._run_task()
+            self.executor.run_measurement()
 
             # Rest between runs except for the last iteration
-            if i < num_runs - 1:
-                print(f"Resting for {rest_duration} seconds before the next run...")
-                time.sleep(rest_duration)
+            if i < self.num_runs - 1:
+                print(f"Resting for {self.rest_duration} seconds before the next run...")
+                time.sleep(self.rest_duration)
 
+        self.executor.stop_service()
         print("Experiment complete.")
 
     def _warn_and_prepare(self):
@@ -38,28 +53,25 @@ class EnergiBridgeExperiment:
         do not affect the measurements.
         """
         print("WARNING: Before proceeding, please:")
-        print("- Close all unnecessary applications and processes.")
+        print("- Close all unnecessary applications.")
+        print("- Kill unnecessary services.")
         print("- Turn off notifications.")
         print("- Disconnect any unnecessary hardware.")
-        print("- Kill unnecessary services.")
         print("- Disconnect Wi-Fi.")
         print("- Switch off auto-brightness on your display.")
         print("- Set room temperature (if possible) to 25°C. Else stabalize room temperature it possible.")
         print("Press Enter to continue once the environment is ready.")
         input()
 
-    def _warmup_fibonacci(self, warmup_duration=300):
+    def _warmup_fibonacci(self):
         """
         Runs Fibonacci calculations continuously for a specified duration to warm up the CPU.
-        
-        Parameters:
-        - warmup_duration (int): Duration (in seconds) for which the CPU warm-up should run.
         """
-        print(f"Starting Fibonacci warm-up for {warmup_duration} seconds...")
+        print(f"Starting Fibonacci warm-up for {self.warmup_duration} seconds...")
         start_time = time.time()
 
         # Continuously calculate Fibonacci numbers until the warm-up duration is reached
-        while time.time() - start_time < warmup_duration:
+        while time.time() - start_time < self.warmup_duration:
             self._fib(30)  # Compute Fibonacci of 30 repeatedly
 
         print("Warm-up complete.")
@@ -81,9 +93,8 @@ class EnergiBridgeExperiment:
             a, b = b, a + b
         return b
 
-    def _run_task_and_measurement(self):
+    def _run_task(self):
         """
         Placeholder method for running the actual task that needs performance measurement.
-        To be implemented with specific measurement logic based on the experiment requirements.
         """
         pass
