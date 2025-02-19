@@ -76,3 +76,72 @@
 - **JavaScript-based apps** (VS Code, web browsers) rely on **ECMAScript regex**.
 - **Older or specialized software** (like Notepad++) might use **Boost.Regex** or **custom engines**.
 
+
+---
+
+---
+
+
+# 📌 Comparing Regex Engine Performance in Python
+
+## 1. ✅ Regex Engines You Can Use in Python
+
+### a) **RE2 (Google’s RE2)**
+- Install with [`pyre2`](https://pypi.org/project/re2/).
+- Optimized for speed and prevents catastrophic backtracking.
+
+### b) **PCRE (Perl-Compatible Regular Expressions)**
+- Python bindings available via [`pcre`](https://pypi.org/project/pcre/).
+- More powerful than Python’s built-in `re` module.
+
+### c) **Oniguruma (Used by Ruby, Sublime, Atom)**
+- Python bindings: [`onigmo`](https://github.com/kkos/oniguruma) or `pyonig`.
+- Supports complex regex features like named groups.
+
+### d) **ICU (International Components for Unicode)**
+- Python wrapper available: [`PyICU`](https://pypi.org/project/PyICU/).
+- Often used in LibreOffice, MySQL 8+, and R.
+
+### e) **Boost.Regex**
+- No direct Python wrapper, but can be accessed via:
+  - C++ bindings (`ctypes`, `pybind11`).
+  - Custom-built Boost.Regex C++ wrapper.
+
+---
+
+## 2. ⚠️ Engines With Indirect or Tricky Python Access
+
+### a) **Java’s `java.util.regex`**
+- Can’t be imported in Python directly.
+- Workarounds:
+  - Run Java regex via [`subprocess`](https://docs.python.org/3/library/subprocess.html).
+  - Use [`JPype`](https://pypi.org/project/JPype1/) to call Java from Python.
+
+### b) **.NET `System.Text.RegularExpressions` (PowerShell)**
+- No direct Python access.
+- Workarounds:
+  - Use **IronPython** (Python on .NET).
+  - Run regex via PowerShell and capture output in Python.
+
+### c) **POSIX BRE/ERE (`grep`, `sed`, `awk`)**
+- Not directly available in Python.
+- Workaround:
+  - Execute shell commands via `subprocess.run(["grep", ...])`.
+
+### d) **Vim / Emacs / Microsoft Word / Adobe Photoshop**
+- No native Python support.
+- These use **custom regex engines** tied to their respective software.
+
+---
+
+## 3. 🐍 Engines Already in Python
+
+### a) **`re` (Built-in Python Module)**
+- Standard regex engine in Python.
+- Good for most cases but lacks advanced PCRE features.
+
+### b) **`regex` (Third-party Module)**
+- Enhanced version of `re` with additional features.
+- Install with:  
+  ```bash
+  pip install regex
