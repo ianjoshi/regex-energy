@@ -38,13 +38,13 @@ class EnergiBridgeExperiment:
         do not affect the measurements.
         """
         print("WARNING: Before proceeding, please:")
-        print("- Close all unnecessary applications.")
+        print("- Close all unnecessary applications and processes.")
         print("- Turn off notifications.")
         print("- Disconnect any unnecessary hardware.")
         print("- Kill unnecessary services.")
-        print("- Disconnect Wi-Fi (if your measurement does not require it).")
+        print("- Disconnect Wi-Fi.")
         print("- Switch off auto-brightness on your display.")
-        print("- Set room temperature (if possible) to 20°C. Else stabalize room temperature.")
+        print("- Set room temperature (if possible) to 25°C. Else stabalize room temperature it possible.")
         print("Press Enter to continue once the environment is ready.")
         input()
 
