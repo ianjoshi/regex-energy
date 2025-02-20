@@ -19,7 +19,7 @@ class EnergyExperiment:
         self.num_runs = num_runs
         self.warmup_duration = warmup_duration
         self.rest_duration = rest_duration
-        self.executor = EnergiBridgeExecutor(max_measurement_duration=measurement_duration)
+        self.energibridge = EnergiBridgeExecutor(max_measurement_duration=measurement_duration)
 
     def run_experiment(self):
         """
@@ -30,20 +30,20 @@ class EnergyExperiment:
         """
         self._warn_and_prepare()
         self._warmup_fibonacci()
-        self.executor.start_service()
+        self.energibridge.start_service()
 
         for i in range(self.num_runs):
             print(f"----- Run {i+1} of {self.num_runs} -----")
 
             self._run_task()
-            self.executor.run_measurement()
+            self.energibridge.run_measurement()
 
             # Rest between runs except for the last iteration
             if i < self.num_runs - 1:
                 print(f"Resting for {self.rest_duration} seconds before the next run...")
                 time.sleep(self.rest_duration)
 
-        self.executor.stop_service()
+        self.energibridge.stop_service()
         print("Experiment complete.")
 
     def _warn_and_prepare(self):
