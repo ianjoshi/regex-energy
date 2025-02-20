@@ -2,7 +2,7 @@
 
 ## **🖥️ Text Editors & IDEs**
 - **Notepad++** → [Boost.Regex](https://www.boost.org/doc/libs/1_81_0/libs/regex/doc/html/index.html) (C++ Boost library)
-- **Visual Studio Code (VS Code)** → [ECMAScript RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions)
+- **Visual Studio Code (VS Code)** → [Javascript RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions)
 
 - **Sublime Text** → [Oniguruma](https://github.com/kkos/oniguruma) (same as Ruby’s regex engine)
 - **Atom** → [Oniguruma](https://github.com/kkos/oniguruma)
