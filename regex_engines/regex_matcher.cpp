@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 std::string read_file(const std::string& filepath) {
     std::ifstream file(filepath);
@@ -13,23 +14,38 @@ std::string read_file(const std::string& filepath) {
 }
 
 int main() {
-    std::string corpus = read_file("data/corpus.txt");
+    // Load corpus first
+    std::string corpus = read_file("data/test_corpus.txt");
+    std::vector<std::string> patterns = {"hello", "Pikles"};
     
-    
-    boost::regex pattern0("hello");
-    boost::sregex_iterator it0(corpus.begin(), corpus.end(), pattern0);
-    boost::sregex_iterator end;
-    while(it0 != end) {
-        std::cout << "Match 0: " << it0->str() << std::endl;
-        ++it0;
+    // Signal ready and wait for start
+    {
+        std::ofstream ready_file("regex_engines/ready_pipe");
+        ready_file << "ready\n";
     }
-
-    boost::regex pattern1("Pikles");
-    boost::sregex_iterator it1(corpus.begin(), corpus.end(), pattern1);
-    boost::sregex_iterator end;
-    while(it1 != end) {
-        std::cout << "Match 1: " << it1->str() << std::endl;
-        ++it1;
+    {
+        std::ifstream start_file("regex_engines/start_pipe");
+        std::string _;
+        std::getline(start_file, _);  // Wait for start signal
+    }
+    
+    // Perform regex matching
+    for (size_t i = 0; i < patterns.size(); ++i) {
+        std::cout << "Pattern " << i << ": " << patterns[i] << std::endl;
+        boost::regex pattern(patterns[i]);
+        boost::sregex_iterator it(corpus.begin(), corpus.end(), pattern);
+        boost::sregex_iterator end;
+        while(it != end) {
+            std::cout << "Match: " << it->str() << std::endl;
+            ++it;
+        }
+        std::cout << std::endl;
+    }
+    
+    // Signal completion
+    {
+        std::ofstream done_file("regex_engines/done_pipe");
+        done_file << "done\n";
     }
     
     return 0;

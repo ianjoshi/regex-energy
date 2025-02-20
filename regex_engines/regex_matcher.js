@@ -1,17 +1,24 @@
 
 const fs = require('fs');
 
-const corpus = fs.readFileSync('data/corpus.txt', 'utf8');
+// Load corpus first
+const corpus = fs.readFileSync('data/test_corpus.txt', 'utf8');
+const patterns = ["hello", "Pikles"];
 
+// Signal ready and wait for start
+fs.writeFileSync('regex_engines/ready_pipe', 'ready\n');
+fs.readFileSync('regex_engines/start_pipe'); // Wait for start signal
 
-const regex0 = new RegExp('hello', 'g');
-let match0;
-while ((match0 = regex0.exec(corpus)) !== null) {
-    console.log(`Match 0: ${match0[0]}`);
-}
+// Perform regex matching
+patterns.forEach((pattern, i) => {
+    console.log(`Pattern ${i}: ${pattern}`);
+    const regex = new RegExp(pattern, 'g');
+    let match;
+    while ((match = regex.exec(corpus)) !== null) {
+        console.log(`Match: ${match[0]}`);
+    }
+    console.log();
+});
 
-const regex1 = new RegExp('Pikles', 'g');
-let match1;
-while ((match1 = regex1.exec(corpus)) !== null) {
-    console.log(`Match 1: ${match1[0]}`);
-}
+// Signal completion
+fs.writeFileSync('regex_engines/done_pipe', 'done\n');
