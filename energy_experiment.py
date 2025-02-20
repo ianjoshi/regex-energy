@@ -45,7 +45,7 @@ class EnergyExperiment:
             for file_size in self.file_sizes:
                 for regex_complexity in self.regex_complexities:
                     task_name = f"{engine}_{file_size}_{regex_complexity}"
-                    self.tasks[task_name] = lambda: regex_matching(engine, file_size, regex_complexity)
+                    self.tasks[task_name] = lambda e=engine, f=file_size, r=regex_complexity: regex_matching(e, f, r)
 
     def run_experiment(self):
         """
