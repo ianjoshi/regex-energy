@@ -10,7 +10,7 @@ class CorpusGenerator:
         output_dir (str): Directory where the .txt files will be saved.
     """
 
-    def __init__(self, output_dir='data/converted_files'):
+    def __init__(self, output_dir='data'):
         """
         Initialises the CorpusGenerator.
 

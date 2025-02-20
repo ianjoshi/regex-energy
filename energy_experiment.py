@@ -3,11 +3,13 @@ import random
 from energibridge_executor import EnergibridgeExecutor
 
 # engines = ["engine_py", "engine_cpp", "engine_js", "engine_java"]
-# file_sizes = ["size_small", "size_medium", "size_large"]
-# regex_complexities = ["complexity_low", "complexity_medium", "complexity_high"]
+# file_sizes = ["small", "medium", "large"]
+# regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
+
+# Small example for testing
 engines = ["engine_py"]
-file_sizes = ["size_small"]
-regex_complexities = ["complexity_low", "complexity_medium"]
+file_sizes = ["small"]
+regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
 
 class EnergyExperiment:
     """
@@ -15,7 +17,7 @@ class EnergyExperiment:
     The experiment includes a warm-up phase, task execution, and rest periods between runs.
     """
 
-    def __init__(self, num_runs=2, warmup_duration=10, rest_duration=5, measurement_duration=10, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
+    def __init__(self, num_runs=30, warmup_duration=300, rest_duration=60, measurement_duration=10, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
         """
         Initializes the experiment with the necessary parameters.
 
@@ -43,9 +45,9 @@ class EnergyExperiment:
         """
         for engine in self.engines:
             for file_size in self.file_sizes:
-                for regex_complexity in self.regex_complexities:
+                for regex_complexity in self.regex_complexities.keys():
                     task_name = f"{engine}_{file_size}_{regex_complexity}"
-                    self.tasks[task_name] = lambda e=engine, f=file_size, r=regex_complexity: regex_matching(e, f, r)
+                    self.tasks[task_name] = lambda e=engine, f=file_size, r=regex_complexities[regex_complexity]: regex_matching(e, f, r)
 
     def run_experiment(self):
         """
@@ -114,6 +116,15 @@ class EnergyExperiment:
             a, b = b, a + b
         return b
     
-def regex_matching(engine, file_size, regex_complexity):
-    print(f"Running task: {engine}, {file_size}, {regex_complexity}")
-    time.sleep(2)
+def regex_matching(engine, file_size, regex_pattern):
+    
+    # Retrieve the corpus file based on the file size
+    corpus = f"data/{file_size}.txt"
+
+    if engine == "engine_py":
+        import re
+        with open(corpus, "r") as file:
+            content = file.read()
+            matches = re.findall(regex_pattern, content)
+            print(f"Number of matches found: {len(matches)}")
+
