@@ -34,9 +34,10 @@ class EnergyExperiment:
 
         for i in range(self.num_runs):
             print(f"----- Run {i+1} of {self.num_runs} -----")
+            output_file = f"results/results_{i+1}.csv"
 
             self._run_task()
-            self.energibridge.run_measurement()
+            self.energibridge.run_measurement(output_file=output_file)
 
             # Rest between runs except for the last iteration
             if i < self.num_runs - 1:
