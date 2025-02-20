@@ -1,4 +1,4 @@
-from energibridge_executor import EnergiBridgeExecutor
+from energibridge_executor import EnergibridgeExecutor
 import time
 
 class EnergyExperiment:
@@ -19,7 +19,7 @@ class EnergyExperiment:
         self.num_runs = num_runs
         self.warmup_duration = warmup_duration
         self.rest_duration = rest_duration
-        self.energibridge = EnergiBridgeExecutor(max_measurement_duration=measurement_duration)
+        self.energibridge = EnergibridgeExecutor(max_measurement_duration=measurement_duration)
 
     def run_experiment(self):
         """

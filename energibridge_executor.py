@@ -1,7 +1,7 @@
 import subprocess
 import time
 
-class EnergiBridgeExecutor:
+class EnergibridgeExecutor:
     """
     A class to handle the execution of EnergiBridge commands for energy measurements.
     """
