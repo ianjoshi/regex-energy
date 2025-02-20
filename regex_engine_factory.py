@@ -2,15 +2,15 @@ import os
 import shutil
 
 class RegexEngineFactory:
-    def __init__(self, regular_expressions: list[str], directory_to_store_engines: str = 'regex_engines', filepath_to_corpus: str = 'data/corpus.txt'):
+    def __init__(self, regular_expressions: list[str], directory_to_store_engines: str = 'regex_engines', filepath_to_corpus: str = 'data/test_corpus.txt'):
         self.regular_expressions = regular_expressions
         self.directory_to_store_engines = directory_to_store_engines
         self.filepath_to_corpus = filepath_to_corpus
         
         # Create named pipes for synchronization
-        self.ready_pipe = os.path.join(self.directory_to_store_engines, 'ready_pipe')
-        self.start_pipe = os.path.join(self.directory_to_store_engines, 'start_pipe')
-        self.done_pipe = os.path.join(self.directory_to_store_engines, 'done_pipe')
+        self.ready_pipe = f"{self.directory_to_store_engines}/ready_pipe"
+        self.start_pipe = f"{self.directory_to_store_engines}/start_pipe"
+        self.done_pipe = f"{self.directory_to_store_engines}/done_pipe"
 
     def create_engines(self):
         """
@@ -193,7 +193,7 @@ int main() {{
             shutil.rmtree(self.directory_to_store_engines)
 
 if __name__ == "__main__":
-    factory = RegexEngineFactory(regular_expressions=["hello", "Pikles"], directory_to_store_engines="regex_engines", filepath_to_corpus="data/corpus.txt")
-    # factory.create_engines()
+    factory = RegexEngineFactory(regular_expressions=["hello", "Pikles"], directory_to_store_engines="regex_engines", filepath_to_corpus="data/test_corpus.txt")
+    factory.create_engines()
     # input("Press Enter to destroy the engines...")
-    factory.destroy_engines()
+    # factory.destroy_engines()
