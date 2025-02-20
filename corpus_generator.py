@@ -27,7 +27,7 @@ class CorpusGenerator:
         # Create the directory if it does not exist
         os.makedirs(output_dir, exist_ok=True)
 
-    def fetch_and_save(self):
+    def generate_corpus_files(self):
         """
         Fetches the code from each URL and saves it as a .txt file.
         """
@@ -71,5 +71,5 @@ class CorpusGenerator:
         print(f"Saved {file_path}")
 
 if __name__ == '__main__':
-    fetcher = CorpusGenerator()
-    fetcher.fetch_and_save()
+    corpus_generator = CorpusGenerator()
+    corpus_generator.generate_corpus_files()
