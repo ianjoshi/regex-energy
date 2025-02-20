@@ -22,7 +22,6 @@ class CorpusGenerator:
             'small.txt' : 'https://raw.githubusercontent.com/huggingface/transformers/refs/heads/main/examples/pytorch/text-classification/run_glue.py',
             'medium.txt' : 'https://raw.githubusercontent.com/pytorch/pytorch/refs/heads/main/torch/nn/functional.py',
             'large.txt' : 'https://raw.githubusercontent.com/numpy/numpy/refs/heads/main/numpy/_core/tests/test_multiarray.py'
-            # TODO: Add Large URL
         }
         self.output_dir = output_dir
         # Create the directory if it does not exist
