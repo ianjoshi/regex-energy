@@ -2,13 +2,22 @@ import time
 import random
 from energibridge_executor import EnergibridgeExecutor
 
+# engines = ["engine_py", "engine_cpp", "engine_js", "engine_java"]
+# file_sizes = ["small", "medium", "large"]
+# regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
+
+# Small example for testing
+engines = ["engine_py"]
+file_sizes = ["small"]
+regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
+
 class EnergyExperiment:
     """
     A class for running controlled performance measurement experiments on a system.
     The experiment includes a warm-up phase, task execution, and rest periods between runs.
     """
 
-    def __init__(self, num_runs=30, warmup_duration=300, rest_duration=60, measurement_duration=10):
+    def __init__(self, num_runs=30, warmup_duration=300, rest_duration=60, measurement_duration=10, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
         """
         Initializes the experiment with the necessary parameters.
 
@@ -21,13 +30,24 @@ class EnergyExperiment:
         self.num_runs = num_runs
         self.warmup_duration = warmup_duration
         self.rest_duration = rest_duration
+        self.engines = engines
+        self.file_sizes = file_sizes
+        self.regex_complexities = regex_complexities
+
         self.energibridge = EnergibridgeExecutor(max_measurement_duration=measurement_duration)
 
         # Dictionary mapping task names to functions for experiment
-        self.tasks = {
-             "placeholder_task_a" : placeholder_task_a,
-             "placeholder_task_b": placeholder_task_b
-        }
+        self.tasks = {}
+
+    def generate_tasks(self):
+        """
+        Generates a combination of all possible tasks for the experiment.
+        """
+        for engine in self.engines:
+            for file_size in self.file_sizes:
+                for regex_complexity in self.regex_complexities.keys():
+                    task_name = f"{engine}_{file_size}_{regex_complexity}"
+                    self.tasks[task_name] = lambda e=engine, f=file_size, r=regex_complexities[regex_complexity]: regex_matching(e, f, r)
 
     def run_experiment(self):
         """
@@ -36,6 +56,8 @@ class EnergyExperiment:
         2. Warms up the CPU by running Fibonacci calculations.
         3. Runs each task multiple times in a shuffled order with rest intervals.
         """
+        self.generate_tasks()
+
         if not self.tasks:
             raise ValueError("No tasks have been set.")
 
@@ -94,11 +116,15 @@ class EnergyExperiment:
             a, b = b, a + b
         return b
     
-# TODO: Remove once concrete tasks are implemented
-def placeholder_task_a():
-    print("Running placeholder task A...")
-    time.sleep(2)
+def regex_matching(engine, file_size, regex_pattern):
+    
+    # Retrieve the corpus file based on the file size
+    corpus = f"data/{file_size}.txt"
 
-def placeholder_task_b():
-    print("Running placeholder task B...")
-    time.sleep(4)
+    if engine == "engine_py":
+        import re
+        with open(corpus, "r") as file:
+            content = file.read()
+            matches = re.findall(regex_pattern, content)
+            print(f"Number of matches found: {len(matches)}")
+
