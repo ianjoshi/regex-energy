@@ -7,10 +7,8 @@ class RegexEngineFactory:
         self.directory_to_store_engines = directory_to_store_engines
         self.filepath_to_corpus = filepath_to_corpus
         
-        # Create named pipes for synchronization
-        self.ready_pipe = f"{self.directory_to_store_engines}/ready_pipe"
-        self.start_pipe = f"{self.directory_to_store_engines}/start_pipe"
-        self.done_pipe = f"{self.directory_to_store_engines}/done_pipe"
+        
+   
 
     def create_engines(self):
         """
@@ -25,7 +23,7 @@ class RegexEngineFactory:
         if not os.path.exists(self.filepath_to_corpus):
             print(f"The corpus file '{self.filepath_to_corpus}' does not exist.")
             return
-            
+        
         self._create_java_engine()
         self._create_javascript_engine()
         self._create_boost_engine()
@@ -43,33 +41,27 @@ public class RegexMatcher {{
         String corpus = readFile("{self.filepath_to_corpus}");
         List<String> patterns = Arrays.asList({", ".join(f'"{pattern}"' for pattern in self.regular_expressions)});
         
-        // Signal ready and wait for start
-        BufferedWriter readyWriter = new BufferedWriter(new FileWriter("{self.ready_pipe}"));
-        readyWriter.write("ready\\n");
-        readyWriter.flush();
-        readyWriter.close();
+        // Signal ready
+        System.out.println("ready");
         
-        BufferedReader startReader = new BufferedReader(new FileReader("{self.start_pipe}"));
-        startReader.readLine();  // Wait for start signal
-        startReader.close();
+        // Wait for start signal
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        reader.readLine();  // Wait for any input
         
         // Perform regex matching
         for (int i = 0; i < patterns.size(); i++) {{
             String pattern = patterns.get(i);
-            System.out.println("Pattern " + i + ": " + pattern);
             Pattern compiledPattern = Pattern.compile(pattern);
             Matcher matcher = compiledPattern.matcher(corpus);
+            int count = 0;
             while (matcher.find()) {{
-                System.out.println("Match: " + matcher.group());
+                count++;
             }}
-            System.out.println();
+            System.out.println("Pattern " + i + ": " + pattern + " - Matches: " + count);
         }}
         
         // Signal completion
-        BufferedWriter doneWriter = new BufferedWriter(new FileWriter("{self.done_pipe}"));
-        doneWriter.write("done\\n");
-        doneWriter.flush();
-        doneWriter.close();
+        System.out.println("done");
     }}
 
     private static String readFile(String filepath) {{
@@ -101,23 +93,23 @@ const fs = require('fs');
 const corpus = fs.readFileSync('{self.filepath_to_corpus}', 'utf8');
 const patterns = [{", ".join(f'"{pattern}"' for pattern in self.regular_expressions)}];
 
-// Signal ready and wait for start
-fs.writeFileSync('{self.ready_pipe}', 'ready\\n');
-fs.readFileSync('{self.start_pipe}'); // Wait for start signal
+// Signal ready
+console.log('ready');
 
-// Perform regex matching
-patterns.forEach((pattern, i) => {{
-    console.log(`Pattern ${{i}}: ${{pattern}}`);
-    const regex = new RegExp(pattern, 'g');
-    let match;
-    while ((match = regex.exec(corpus)) !== null) {{
-        console.log(`Match: ${{match[0]}}`);
-    }}
-    console.log();
+// Wait for start signal
+process.stdin.resume();
+process.stdin.once('data', () => {{
+    // Perform regex matching
+    patterns.forEach((pattern, i) => {{
+        const regex = new RegExp(pattern, 'g');
+        const matches = corpus.match(regex) || [];
+        console.log(`Pattern ${{i}}: ${{pattern}} - Matches: ${{matches.length}}`);
+    }});
+
+    // Signal completion
+    console.log('done');
+    process.exit(0);
 }});
-
-// Signal completion
-fs.writeFileSync('{self.done_pipe}', 'done\\n');
 """
         
         with open(f"{self.directory_to_store_engines}/regex_matcher.js", "w") as f:
@@ -148,35 +140,28 @@ int main() {{
     std::string corpus = read_file("{self.filepath_to_corpus}");
     std::vector<std::string> patterns = {{{", ".join(f'"{pattern}"' for pattern in self.regular_expressions)}}};
     
-    // Signal ready and wait for start
-    {{
-        std::ofstream ready_file("{self.ready_pipe}");
-        ready_file << "ready\\n";
-    }}
-    {{
-        std::ifstream start_file("{self.start_pipe}");
-        std::string _;
-        std::getline(start_file, _);  // Wait for start signal
-    }}
+    // Signal ready
+    std::cout << "ready" << std::endl;
+    
+    // Wait for start signal
+    std::string _;
+    std::getline(std::cin, _);
     
     // Perform regex matching
     for (size_t i = 0; i < patterns.size(); ++i) {{
-        std::cout << "Pattern " << i << ": " << patterns[i] << std::endl;
         boost::regex pattern(patterns[i]);
         boost::sregex_iterator it(corpus.begin(), corpus.end(), pattern);
         boost::sregex_iterator end;
+        int count = 0;
         while(it != end) {{
-            std::cout << "Match: " << it->str() << std::endl;
+            count++;
             ++it;
         }}
-        std::cout << std::endl;
+        std::cout << "Pattern " << i << ": " << patterns[i] << " - Matches: " << count << std::endl;
     }}
     
     // Signal completion
-    {{
-        std::ofstream done_file("{self.done_pipe}");
-        done_file << "done\\n";
-    }}
+    std::cout << "done" << std::endl;
     
     return 0;
 }}"""
