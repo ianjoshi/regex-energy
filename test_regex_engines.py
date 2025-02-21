@@ -14,8 +14,8 @@ class TestRegexEngines(unittest.TestCase):
         )
         self.factory.create_engines()
 
-    # def tearDown(self):
-        # self.factory.destroy_engines()
+    def tearDown(self):
+        self.factory.destroy_engines()
 
     # To run this test, you need to have Java installed.
     def test_java_engine_pipe_interaction(self):
