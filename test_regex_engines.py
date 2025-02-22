@@ -3,6 +3,7 @@ import unittest
 import time
 from regex_engine_factory import RegexEngineFactory
 import subprocess
+from dotenv import load_dotenv
 
 class TestRegexEngines(unittest.TestCase):
     def setUp(self):
@@ -99,7 +100,11 @@ class TestRegexEngines(unittest.TestCase):
     # To run this test, you need to have the Boost-regex library installed. And a c++ compiler installed.
     # command: vcpkg install boost-regex:x64-windows
     def test_boost_engine_pipe_interaction(self):
-        boost_path = "C:/Users/marin/OneDrive/Documentos/Tu Delft/DSAIT/Year 1/Q3/SSE/vcpkg/installed/x64-windows"
+        # Get Boost path from environment
+        load_dotenv()
+        boost_path = os.getenv("BOOST_PATH")
+        if not boost_path:
+            raise ValueError("BOOST_PATH environment variable not set")
         
         # Print the directory contents to debug
         print("Checking library directory:")
