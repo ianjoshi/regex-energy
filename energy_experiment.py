@@ -10,7 +10,7 @@ engines = ["engine_py", "engine_cpp", "engine_js", "engine_java"]
 # Small example for testing
 # engines = ["engine_py"]
 file_sizes = ["test_corpus"]
-regex_complexities = {"complexity_low": r"Pick", "complexity_medium": r"\b[Aa]nakin\b", "complexity_high": r"\b[Pp]ick(?:les|langelo|azorus-rex)?\b"}
+regex_complexities = {"complexity_low": r"hello", "complexity_medium": r"Pickles", "complexity_high": r".*?ick.*?"}
 
 class EnergyExperiment:
     """
@@ -18,7 +18,7 @@ class EnergyExperiment:
     The experiment includes a warm-up phase, task execution, and rest periods between runs.
     """
 
-    def __init__(self, num_runs=2, warmup_duration=10, rest_duration=5, measurement_duration=10, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
+    def __init__(self, num_runs=2, warmup_duration=1, rest_duration=5, measurement_duration=10, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
         """
         Initializes the experiment with the necessary parameters.
 
@@ -139,7 +139,7 @@ def regex_matching(engine, file_size, regex_pattern):
     output = getattr(regex_engine_executor, method_name)()
     print("Found matches:", output)
 
-    regex_engine_executor.tearDown()
+    # regex_engine_executor.tearDown()
 
     return output
 
