@@ -99,20 +99,20 @@ class TestRegexEngines(unittest.TestCase):
     # To run this test, you need to have the Boost-regex library installed. And a c++ compiler installed.
     # command: vcpkg install boost-regex:x64-windows
     def test_boost_engine_pipe_interaction(self):
-        boost_path = "C:/dev/vcpkg/installed/x64-mingw-dynamic"
+        boost_path = "C:/dev/vcpkg/installed/x64-mingw-dynamic" # Depends on vcpkg installation path
         
         # Print the directory contents to debug
         print("Checking library directory:")
         subprocess.run(["dir", f"{boost_path}/lib"], shell=True)
         
         compile_result = subprocess.run([
-            "g++",
+            "g++", # Depends on compiler
             f"{self.factory.directory_to_store_engines}/regex_matcher.cpp",
             "-o", f"{self.factory.directory_to_store_engines}/regex_matcher.exe",
             f"-I{boost_path}/include",
             f"-L{boost_path}/lib",
             "-Wl,-rpath," + boost_path + "/bin",
-            "-lboost_regex-gcc10-mt-x64-1_86",  # Exact library name without 'lib' prefix and '.dll.a' suffix
+            "-lboost_regex-gcc10-mt-x64-1_86",  # Depends on compiler
             "--verbose"
         ], capture_output=True, text=True)
         
