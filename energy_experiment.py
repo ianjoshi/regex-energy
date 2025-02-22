@@ -3,14 +3,14 @@ import random
 from energibridge_executor import EnergibridgeExecutor
 from run_regex_engines import RegexEnginesExecutor
 
-engines = ["engine_py", "engine_cpp", "engine_js", "engine_java"]
-# file_sizes = ["small", "medium", "large"]
-# regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
+engines = ["engine_py", "engine_java", "engine_js", "engine_cpp"]
+file_sizes = ["small", "medium", "large"]
+regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
 
 # Small example for testing
 # engines = ["engine_py"]
-file_sizes = ["test_corpus"]
-regex_complexities = {"complexity_low": r"hello", "complexity_medium": r"Pickles", "complexity_high": r".*?ick.*?"}
+# file_sizes = ["test_corpus"]
+# regex_complexities = {"complexity_low": r"Pickles", "complexity_medium": r"\b[Pp]ick(?!les)\w*\b", "complexity_high": r"[^.?!]*\b\w+'s\b[^.?!]*[.?!]"}
 
 class EnergyExperiment:
     """
@@ -18,7 +18,7 @@ class EnergyExperiment:
     The experiment includes a warm-up phase, task execution, and rest periods between runs.
     """
 
-    def __init__(self, num_runs=2, warmup_duration=1, rest_duration=5, measurement_duration=10, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
+    def __init__(self, num_runs=30, warmup_duration=300, rest_duration=60, measurement_duration=10, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
         """
         Initializes the experiment with the necessary parameters.
 
@@ -146,5 +146,3 @@ def regex_matching(engine, file_size, regex_pattern):
 if __name__ == "__main__":
     experiment = EnergyExperiment()
     experiment.run_experiment()
-
-

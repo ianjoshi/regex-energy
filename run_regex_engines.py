@@ -33,7 +33,8 @@ class RegexEnginesExecutor:
         with open(self.corpus, "r") as file:
             content = file.read()
             matches = re.findall(self.pattern, content)
-        return matches
+            output = f'Pattern 0: {self.pattern} - Matches: {len(matches)}'
+        return [output]
 
     def run_java_engine(self):
         # Compile and start Java process
