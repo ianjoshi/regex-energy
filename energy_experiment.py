@@ -1,15 +1,16 @@
 import time
 import random
 from energibridge_executor import EnergibridgeExecutor
+from run_regex_engines import RegexEnginesExecutor
 
-# engines = ["engine_py", "engine_cpp", "engine_js", "engine_java"]
+engines = ["engine_py", "engine_cpp", "engine_js", "engine_java"]
 # file_sizes = ["small", "medium", "large"]
 # regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
 
 # Small example for testing
-engines = ["engine_py"]
-file_sizes = ["small"]
-regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
+# engines = ["engine_py"]
+file_sizes = ["test_corpus"]
+regex_complexities = {"complexity_low": r"Pick", "complexity_medium": r"\b[Aa]nakin\b", "complexity_high": r"\b[Pp]ick(?:les|langelo|azorus-rex)?\b"}
 
 class EnergyExperiment:
     """
@@ -17,7 +18,7 @@ class EnergyExperiment:
     The experiment includes a warm-up phase, task execution, and rest periods between runs.
     """
 
-    def __init__(self, num_runs=30, warmup_duration=300, rest_duration=60, measurement_duration=10, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
+    def __init__(self, num_runs=2, warmup_duration=10, rest_duration=5, measurement_duration=10, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
         """
         Initializes the experiment with the necessary parameters.
 
@@ -121,10 +122,29 @@ def regex_matching(engine, file_size, regex_pattern):
     # Retrieve the corpus file based on the file size
     corpus = f"data/{file_size}.txt"
 
-    if engine == "engine_py":
-        import re
-        with open(corpus, "r") as file:
-            content = file.read()
-            matches = re.findall(regex_pattern, content)
-            print(f"Number of matches found: {len(matches)}")
+    regex_engine_executor = RegexEnginesExecutor(
+        regex_engine=engine,
+        corpus=corpus,
+        pattern=regex_pattern
+    )
+
+    regex_engine_executor.setUp()
+
+    # Retrieve method name from the dictionary and call it dynamically
+    method_name = RegexEnginesExecutor.engine_methods.get(engine)
+    if method_name is None:
+        raise ValueError(f"Unknown regex engine: {engine}")
+
+    # Call the method dynamically using `getattr`
+    output = getattr(regex_engine_executor, method_name)()
+    print("Found matches:", output)
+
+    regex_engine_executor.tearDown()
+
+    return output
+
+if __name__ == "__main__":
+    experiment = EnergyExperiment()
+    experiment.run_experiment()
+
 
