@@ -6,9 +6,6 @@ class RegexEngineFactory:
         self.regular_expressions = regular_expressions
         self.directory_to_store_engines = directory_to_store_engines
         self.filepath_to_corpus = filepath_to_corpus
-        
-        
-   
 
     def create_engines(self):
         """

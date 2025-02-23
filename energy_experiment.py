@@ -3,6 +3,7 @@ import random
 from energibridge_executor import EnergibridgeExecutor
 from run_regex_engines import RegexEnginesExecutor
 
+# Define the engines, file sizes, and regex patterns to be used in the experiment
 engines = ["engine_py", "engine_java", "engine_js", "engine_cpp"]
 file_sizes = ["small", "medium", "large"]
 regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
@@ -48,6 +49,7 @@ class EnergyExperiment:
             for file_size in self.file_sizes:
                 for regex_complexity in self.regex_complexities.keys():
                     task_name = f"{engine}_{file_size}_{regex_complexity}"
+                    # Create a task with the corresponding parameters
                     self.tasks[task_name] = lambda e=engine, f=file_size, r=regex_complexities[regex_complexity]: regex_matching(e, f, r)
 
     def run_experiment(self):
@@ -74,7 +76,10 @@ class EnergyExperiment:
             print(f"----- Run {run_index} (Task: {task_name}, Instance: {run_id}) -----")
             output_file = f"results/{task_name}_run_{run_id}.csv"
 
-            task_func()  # Execute the task
+            # Execute the task
+            task_func()
+
+            # Run energy measurement
             self.energibridge.run_measurement(output_file=output_file)
 
             # Rest between runs except for the last iteration
@@ -104,7 +109,8 @@ class EnergyExperiment:
         start_time = time.time()
 
         while time.time() - start_time < self.warmup_duration:
-            self._fib(30)  # Compute Fibonacci of 30 repeatedly
+            # Compute Fibonacci of 30 repeatedly
+            self._fib(30) 
 
         print("Warm-up complete.")
 
@@ -118,19 +124,24 @@ class EnergyExperiment:
         return b
     
 def regex_matching(engine, file_size, regex_pattern):
+    """
+    Perform regex matching using the specified engine, corpus file size, and regex pattern.
+    """
     
     # Retrieve the corpus file based on the file size
     corpus = f"data/{file_size}.txt"
 
+    # Create an instance of the RegexEnginesExecutor
     regex_engine_executor = RegexEnginesExecutor(
         regex_engine=engine,
         corpus=corpus,
         pattern=regex_pattern
     )
 
+    # Set up the regex engine
     regex_engine_executor.setUp()
 
-    # Retrieve method name from the dictionary and call it dynamically
+    # Retrieve the method name from the dictionary and call it dynamically
     method_name = RegexEnginesExecutor.engine_methods.get(engine)
     if method_name is None:
         raise ValueError(f"Unknown regex engine: {engine}")
