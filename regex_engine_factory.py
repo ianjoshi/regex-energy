@@ -6,9 +6,6 @@ class RegexEngineFactory:
         self.regular_expressions = regular_expressions
         self.directory_to_store_engines = directory_to_store_engines
         self.filepath_to_corpus = filepath_to_corpus
-        
-        
-   
 
     def create_engines(self):
         """
@@ -39,7 +36,7 @@ public class RegexMatcher {{
     public static void main(String[] args) throws IOException {{
         // Load corpus first
         String corpus = readFile("{self.filepath_to_corpus}");
-        List<String> patterns = Arrays.asList({", ".join(f'"{pattern}"' for pattern in self.regular_expressions)});
+        List<String> patterns = Arrays.asList({", ".join(f'"{pattern.replace("\\", "\\\\")}"' for pattern in self.regular_expressions)});
         
         // Signal ready
         System.out.println("ready");
@@ -91,7 +88,7 @@ const fs = require('fs');
 
 // Load corpus first
 const corpus = fs.readFileSync('{self.filepath_to_corpus}', 'utf8');
-const patterns = [{", ".join(f'"{pattern}"' for pattern in self.regular_expressions)}];
+const patterns = [{", ".join(f'"{pattern.replace("\\", "\\\\")}"' for pattern in self.regular_expressions)}];
 
 // Signal ready
 console.log('ready');
@@ -138,7 +135,7 @@ std::string read_file(const std::string& filepath) {{
 int main() {{
     // Load corpus first
     std::string corpus = read_file("{self.filepath_to_corpus}");
-    std::vector<std::string> patterns = {{{", ".join(f'"{pattern}"' for pattern in self.regular_expressions)}}};
+    std::vector<std::string> patterns = {{{", ".join(f'"{pattern.replace("\\", "\\\\")}"' for pattern in self.regular_expressions)}}};
     
     // Signal ready
     std::cout << "ready" << std::endl;

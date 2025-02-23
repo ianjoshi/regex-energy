@@ -1,25 +1,61 @@
-import os
-import unittest
-import time
 from regex_engine_factory import RegexEngineFactory
 import subprocess
+import re
+import os
 from dotenv import load_dotenv
 
-class TestRegexEngines(unittest.TestCase):
+class RegexEnginesExecutor:
+    """
+    Class to execute the different regex engines.
+    """
+
+    # Dictionary to map the engine name to the method to execute
+    engine_methods = {
+        "engine_py": "run_python_engine",
+        "engine_java": "run_java_engine",
+        "engine_js": "run_javascript_engine",
+        "engine_cpp": "run_boost_engine",
+    }
+
+    def __init__(self, regex_engine, corpus, pattern):
+        """
+        Initialize the class with the regex engine to use, the corpus file and the pattern to match.
+        """
+        self.regex_engine = regex_engine
+        self.corpus = corpus
+        self.pattern = pattern
+
     def setUp(self):
-        self.test_patterns = {"hello": 0, "Pickles": 1, ".*?ick.*?": 3}
+        """
+        Set up the regex engines.
+        """
         self.factory = RegexEngineFactory(
-            regular_expressions=list(self.test_patterns.keys()),
-            directory_to_store_engines="test_engines",
-            filepath_to_corpus="data/test_corpus.txt"
+            regular_expressions=[self.pattern],
+            directory_to_store_engines="regex_engines",
+            filepath_to_corpus=self.corpus
         )
         self.factory.create_engines()
 
     def tearDown(self):
+        """
+        Tear down the regex engines.
+        """
         self.factory.destroy_engines()
 
-    # To run this test, you need to have Java installed.
-    def test_java_engine_pipe_interaction(self):
+    def run_python_engine(self):
+        """
+        Run the regex engine in Python.
+        """
+        with open(self.corpus, "r") as file:
+            content = file.read()
+            matches = re.findall(self.pattern, content)
+            output = f'Pattern 0: {self.pattern} - Matches: {len(matches)}'
+        return [output]
+
+    def run_java_engine(self):
+        """
+        Run the regex engine in Java.
+        """
         # Compile and start Java process
         subprocess.run(["javac", f"{self.factory.directory_to_store_engines}/RegexMatcher.java"])
         java_process = subprocess.Popen(
@@ -32,7 +68,6 @@ class TestRegexEngines(unittest.TestCase):
         
         # Wait for ready signal
         line = java_process.stdout.readline().strip()
-        self.assertEqual(line, "ready")
         
         # Send start signal
         java_process.stdin.write("start\n")
@@ -51,15 +86,12 @@ class TestRegexEngines(unittest.TestCase):
                     break
             output_lines.append(line)
         
-        # Verify output contains expected pattern matches
-        for i, pattern in enumerate(self.test_patterns.keys()):
-            expected_output = f"Pattern {i}: {pattern} - Matches: {self.test_patterns[pattern]}"
-            self.assertTrue(any(expected_output in line for line in output_lines))
+        return output_lines
 
-        self.assertEqual(java_process.wait(), 0)
-    
-    # To run this test, you need to have Node.js installed.
-    def test_javascript_engine_pipe_interaction(self):
+    def run_javascript_engine(self):
+        """
+        Run the regex engine in JavaScript.
+        """
         # Start Node.js process
         node_process = subprocess.Popen(
             ["node", f"{self.factory.directory_to_store_engines}/regex_matcher.js"],
@@ -71,7 +103,6 @@ class TestRegexEngines(unittest.TestCase):
         
         # Wait for ready signal
         line = node_process.stdout.readline().strip()
-        self.assertEqual(line, "ready")
         
         # Send start signal
         node_process.stdin.write("start\n")
@@ -90,37 +121,31 @@ class TestRegexEngines(unittest.TestCase):
                     break
             output_lines.append(line)
         
-        # Verify output contains expected pattern matches
-        for i, pattern in enumerate(self.test_patterns.keys()):
-            expected_output = f"Pattern {i}: {pattern} - Matches: {self.test_patterns[pattern]}"
-            self.assertTrue(any(expected_output in line for line in output_lines))
+        return output_lines
 
-        self.assertEqual(node_process.wait(), 0)
-
-    # To run this test, you need to have the Boost-regex library installed. And a c++ compiler installed.
-    # command: vcpkg install boost-regex:x64-windows
-    def test_boost_engine_pipe_interaction(self):
-        # Get Boost path from environment
+    def run_boost_engine(self):
+        """
+        Run the regex engine in C++ using Boost.
+        """
+        # Load the Boost path from the environment
         load_dotenv()
         boost_path = os.getenv("BOOST_PATH")
         if not boost_path:
-            raise ValueError("BOOST_PATH environment variable not set")
+            raise RuntimeError("BOOST_PATH environment variable not set.")
         
-        # Print the directory contents to debug
-        print("Checking library directory:")
-        subprocess.run(["dir", f"{boost_path}/lib"], shell=True)
-        
+        # Compile C++ code
         compile_result = subprocess.run([
-            "g++", # Depends on compiler
+            "g++",
             f"{self.factory.directory_to_store_engines}/regex_matcher.cpp",
             "-o", f"{self.factory.directory_to_store_engines}/regex_matcher.exe",
             f"-I{boost_path}/include",
             f"-L{boost_path}/lib",
             "-Wl,-rpath," + boost_path + "/bin",
-            "-lboost_regex-vc143-mt-x64-1_86",  # Depends on compiler
+            "-lboost_regex-vc143-mt-x64-1_86",  # Exact library name without 'lib' prefix and '.dll.a' suffix
             "--verbose"
         ], capture_output=True, text=True)
         
+        # Check if compilation was successful
         if compile_result.returncode != 0:
             print("Library path contents:")
             subprocess.run(["dir", f"{boost_path}/lib"], shell=True)
@@ -137,7 +162,6 @@ class TestRegexEngines(unittest.TestCase):
         
         # Wait for ready signal
         line = cpp_process.stdout.readline().strip()
-        self.assertEqual(line, "ready")
         
         # Send start signal
         cpp_process.stdin.write("start\n")
@@ -155,13 +179,5 @@ class TestRegexEngines(unittest.TestCase):
                 if error:
                     break
             output_lines.append(line)
-        
-        # Verify output contains expected pattern matches
-        for i, pattern in enumerate(self.test_patterns.keys()):
-            expected_output = f"Pattern {i}: {pattern} - Matches: {self.test_patterns[pattern]}"
-            self.assertTrue(any(expected_output in line for line in output_lines))
 
-        self.assertEqual(cpp_process.wait(), 0)
-
-if __name__ == '__main__':
-    unittest.main()
+        return output_lines
