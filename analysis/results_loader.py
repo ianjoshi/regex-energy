@@ -13,7 +13,8 @@ class ResultsLoader:
         """
         Initializes the ResultsLoader with a specified directory containing CSV results.
 
-        :param results_dir (str): Path to the directory containing result CSV files.
+        Parameters:
+        - results_dir (str): Path to the directory containing result CSV files.
         """
         self.results_dir = results_dir
 
@@ -23,7 +24,8 @@ class ResultsLoader:
         The filename is expected to follow the format:
         "engine_<engine_type>_<engine_size>_complexity_<complexity_level>_run_<run_number>.csv"
         
-        :param filename (str): Name of the CSV file.
+        Parameters:
+        - filename (str): Name of the CSV file.
 
         Returns:
         - tuple: (engine (str), regex_complexity (str), run (int))
