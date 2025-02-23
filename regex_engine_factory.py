@@ -24,6 +24,7 @@ class RegexEngineFactory:
         self._create_java_engine()
         self._create_javascript_engine()
         self._create_boost_engine()
+        self._create_dotnet_engine()
     
     def _create_java_engine(self):
         java_code = f"""
@@ -165,6 +166,46 @@ int main() {{
         
         with open(f"{self.directory_to_store_engines}/regex_matcher.cpp", "w") as f:
             f.write(cpp_code)
+    
+    def _create_dotnet_engine(self):
+        """
+        Create the .NET engine as a C# console application, which uses
+        System.Text.RegularExpressions.Regex to find matches.
+        """
+        cs_code = f"""
+using System;
+using System.IO;
+using System.Text.RegularExpressions;
+
+public class RegexMatcher
+{{
+    public static void Main(string[] args)
+    {{
+        // Load corpus first
+        string corpus = File.ReadAllText("{self.filepath_to_corpus}");
+        string[] patterns = new string[] {{ {", ".join(f'"{pattern.replace("\\", "\\\\")}"' for pattern in self.regular_expressions)} }};
+
+        // Signal ready
+        Console.WriteLine("ready");
+
+        // Wait for start signal
+        Console.ReadLine();
+
+        // Perform regex matching
+        for (int i = 0; i < patterns.Length; i++)
+        {{
+            string pattern = patterns[i];
+            var matches = Regex.Matches(corpus, pattern);
+            Console.WriteLine($"Pattern {{i}}: {{pattern}} - Matches: {{matches.Count}}");
+        }}
+
+        // Signal completion
+        Console.WriteLine("done");
+    }}
+}}
+"""
+        with open(f"{self.directory_to_store_engines}/RegexMatcher.cs", "w") as f:
+            f.write(cs_code)
     
     def destroy_engines(self):
         """
