@@ -185,23 +185,27 @@ class RegexEnginesExecutor:
     
     def run_dotnet_engine(self):
         """
-        Run the regex engine in C# (.NET).
-        This compiles and runs the generated RegexMatcher.cs file.
+        Run the regex engine in .NET using csc (C# compiler).
         """
-        # Compile C# code using csc (make sure it's on PATH or fully qualified)
-        compile_result = subprocess.run([
-            "csc",
-            f"{self.factory.directory_to_store_engines}/RegexMatcher.cs",
-            "/out:" + f"{self.factory.directory_to_store_engines}/RegexMatcher.exe"
-        ], capture_output=True, text=True)
-
+        # Compile the C# code using csc
+        compile_result = subprocess.run(
+            ["csc",
+             "-out:"
+             + os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.exe"),
+             os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.cs")],
+            capture_output=True,
+            text=True
+        )
+        
         # Check if compilation was successful
         if compile_result.returncode != 0:
             raise RuntimeError(f".NET compilation failed:\n{compile_result.stderr}")
-
+        
         # Start the .NET process
         dotnet_process = subprocess.Popen(
-            [os.path.join(self.factory.directory_to_store_engines, "RegexMatcher.exe")],
+            [os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.exe"),
+                self.pattern,
+                self.corpus],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -230,3 +234,4 @@ class RegexEnginesExecutor:
                 output_lines.append(line)
 
         return output_lines
+    

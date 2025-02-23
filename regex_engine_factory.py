@@ -196,7 +196,7 @@ public class RegexMatcher
         {{
             string pattern = patterns[i];
             var matches = Regex.Matches(corpus, pattern);
-            Console.WriteLine($"Pattern {{i}}: {{pattern}} - Matches: {{matches.Count}}");
+            Console.WriteLine("Pattern " + i + ": " + pattern + " - Matches: " + matches.Count);
         }}
 
         // Signal completion
