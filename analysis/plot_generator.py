@@ -58,7 +58,7 @@ class PlotGenerator:
             subset = self.df[self.df["regex_complexity"] == complexity]
 
             plt.figure(figsize=(8, 6))
-            plt.title(f"{metric.capitalize()} Distribution for Complexity: {complexity}")
+            plt.title(f"{metric.capitalize()} Distribution for Regex Complexity: {complexity}")
 
             # Violin plot
             sns.violinplot(
