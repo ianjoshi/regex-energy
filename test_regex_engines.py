@@ -111,13 +111,13 @@ class TestRegexEngines(unittest.TestCase):
         subprocess.run(["dir", f"{boost_path}/lib"], shell=True)
         
         compile_result = subprocess.run([
-            "g++",
+            "g++", # Depends on compiler
             f"{self.factory.directory_to_store_engines}/regex_matcher.cpp",
             "-o", f"{self.factory.directory_to_store_engines}/regex_matcher.exe",
             f"-I{boost_path}/include",
             f"-L{boost_path}/lib",
             "-Wl,-rpath," + boost_path + "/bin",
-            "-lboost_regex-vc143-mt-x64-1_86",  # Exact library name without 'lib' prefix and '.dll.a' suffix
+            "-lboost_regex-vc143-mt-x64-1_86",  # Depends on compiler
             "--verbose"
         ], capture_output=True, text=True)
         
