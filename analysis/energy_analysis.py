@@ -5,6 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from analysis.results_loader import ResultsLoader
+from analysis.effect_size_generator import EffectSizeGenerator
 from analysis.plot_generator import PlotGenerator
 from analysis.statistics_generator import StatisticsGenerator
 
@@ -15,6 +16,10 @@ energy_records = loader.load_results()
 # Compute stats
 stats_generator = StatisticsGenerator(energy_records)
 stats_generator.generate()
+
+# Compute effect sizes
+effect_size_generator = EffectSizeGenerator(energy_records)
+effect_size_generator.generate()
 
 # Generate plots
 plots_generator = PlotGenerator(energy_records)
