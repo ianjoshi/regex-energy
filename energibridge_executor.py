@@ -59,5 +59,6 @@ class EnergibridgeExecutor:
         Runs EnergiBridge measurement and stores the results in the specified file.
         """
         print(f"Running measurement...")
-        self._run_command(f'{self.energibridge_exe} -o {output_file} --summary regex_matching.py --corpus {corpus} --engine {engine} --pattern {pattern}')
+        command = f'{self.energibridge_exe} -o {output_file} --summary python regex_matching.py --corpus "{corpus}" --engine "{engine}" --pattern "{pattern}"'
+        self._run_command(command)
         print("Measurement complete.")

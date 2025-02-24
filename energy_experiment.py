@@ -51,7 +51,7 @@ class EnergyExperiment:
                     task_name = f"{engine}_{file_size}_{regex_complexity}"
 
                     # Store task in list
-                    self.tasks[task_name] = ("data/{file_size}.txt", "engine", rf"{pattern}")
+                    self.tasks[task_name] = (f"data/{file_size}.txt", engine, rf"{pattern}")
 
     def run_experiment(self):
         """
@@ -67,6 +67,7 @@ class EnergyExperiment:
 
         self._warn_and_prepare()
         self._warmup_fibonacci()
+        
         self.energibridge.start_service()
 
         # Create a list of (task_name, task, run_index) tuples for shuffling
