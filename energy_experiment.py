@@ -67,7 +67,7 @@ class EnergyExperiment:
 
         self._warn_and_prepare()
         self._warmup_fibonacci()
-        
+
         self.energibridge.start_service()
 
         # Create a list of (task_name, task, run_index) tuples for shuffling
@@ -77,6 +77,9 @@ class EnergyExperiment:
         for run_index, (task_name, (corpus, engine, pattern), run_id) in enumerate(task_run_list, 1):
             print(f"----- Run {run_index} (Task: {task_name}, Instance: {run_id}) -----")
             output_file = f"results/{task_name}_run_{run_id}.csv"
+
+            # Prepare regex matching task
+            self.energibridge.prepare_task(corpus=corpus, engine=engine, pattern=pattern)
 
             # Run energy measurement with task
             self.energibridge.run_measurement(corpus=corpus, engine=engine, pattern=pattern, output_file=output_file)
