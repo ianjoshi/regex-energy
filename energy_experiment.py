@@ -4,8 +4,8 @@ from energibridge_executor import EnergibridgeExecutor
 from run_regex_engines import RegexEnginesExecutor
 
 # Define the engines, file sizes, and regex patterns to be used in the experiment
-engines = ["engine_py", "engine_java", "engine_js", "engine_cpp"]
-file_sizes = ["small", "medium", "large"]
+engines = ["engine_dotnet", "engine_java", "engine_js", "engine_cpp"]
+file_sizes = ["large"]
 regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
 
 # Small example for testing
