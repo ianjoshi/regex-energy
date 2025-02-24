@@ -15,6 +15,7 @@ class RegexEnginesExecutor:
         "engine_java": "run_java_engine",
         "engine_js": "run_javascript_engine",
         "engine_cpp": "run_boost_engine",
+        "engine_dotnet": "run_dotnet_engine"
     }
 
     def __init__(self, regex_engine, corpus, pattern):
@@ -179,5 +180,53 @@ class RegexEnginesExecutor:
                 if error:
                     break
             output_lines.append(line)
+
+        return output_lines
+    
+    def run_dotnet_engine(self):
+        """
+        Run the regex engine in C# (.NET).
+        This compiles and runs the generated RegexMatcher.cs file.
+        """
+        # Compile C# code using csc (make sure it's on PATH or fully qualified)
+        compile_result = subprocess.run([
+            "csc",
+            f"{self.factory.directory_to_store_engines}/RegexMatcher.cs",
+            "/out:" + f"{self.factory.directory_to_store_engines}/RegexMatcher.exe"
+        ], capture_output=True, text=True)
+
+        # Check if compilation was successful
+        if compile_result.returncode != 0:
+            raise RuntimeError(f".NET compilation failed:\n{compile_result.stderr}")
+
+        # Start the .NET process
+        dotnet_process = subprocess.Popen(
+            [os.path.join(self.factory.directory_to_store_engines, "RegexMatcher.exe")],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        
+        # Wait for ready signal
+        line = dotnet_process.stdout.readline().strip()
+        
+        # Send start signal
+        dotnet_process.stdin.write("start\n")
+        dotnet_process.stdin.flush()
+        
+        # Read output until done
+        output_lines = []
+        while True:
+            line = dotnet_process.stdout.readline().strip()
+            if line == "done":
+                break
+            if not line:
+                # Check if there was an error
+                error = dotnet_process.stderr.read()
+                if error:
+                    break
+            else:
+                output_lines.append(line)
 
         return output_lines
