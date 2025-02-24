@@ -3,6 +3,7 @@ import subprocess
 import re
 import os
 from dotenv import load_dotenv
+from pyEnergiBridge.api import EnergiBridgeRunner
 
 class RegexEnginesExecutor:
     """
@@ -18,13 +19,14 @@ class RegexEnginesExecutor:
         "engine_dotnet": "run_dotnet_engine"
     }
 
-    def __init__(self, regex_engine, corpus, pattern):
+    def __init__(self, regex_engine, corpus, pattern, energy_bridge_runner : EnergiBridgeRunner):
         """
         Initialize the class with the regex engine to use, the corpus file and the pattern to match.
         """
         self.regex_engine = regex_engine
         self.corpus = corpus
         self.pattern = pattern
+        self.energy_bridge_runner = energy_bridge_runner
 
     def setUp(self):
         """
@@ -53,7 +55,7 @@ class RegexEnginesExecutor:
             output = f'Pattern 0: {self.pattern} - Matches: {len(matches)}'
         return [output]
 
-    def run_java_engine(self):
+    def run_java_engine(self, output_file):
         """
         Run the regex engine in Java.
         """
@@ -64,32 +66,31 @@ class RegexEnginesExecutor:
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True  # This makes communicate() use strings instead of bytes
+            text=True
         )
         
         # Wait for ready signal
         line = java_process.stdout.readline().strip()
         
-        # Send start signal
-        java_process.stdin.write("start\n")
-        java_process.stdin.flush()
+        # Send start signal and get output
+        self.energy_bridge_runner.start(results_file=output_file)
+        stdout, stderr = java_process.communicate(input="start\n")
+        self.energy_bridge_runner.stop()
         
-        # Read output until done
+        # Process output
         output_lines = []
-        while True:
-            line = java_process.stdout.readline().strip()
-            if line == "done":
-                break
-            if not line:
-                # Check if there was an error
-                error = java_process.stderr.read()
-                if error:
-                    break
-            output_lines.append(line)
+        if stdout:
+            lines = stdout.splitlines()
+            for line in lines:
+                if line.strip() and line.strip() != "done":
+                    output_lines.append(line)
+        
+        if stderr:
+            print(f"Java process stderr: {stderr}")
         
         return output_lines
 
-    def run_javascript_engine(self):
+    def run_javascript_engine(self, output_file):
         """
         Run the regex engine in JavaScript.
         """
@@ -105,26 +106,25 @@ class RegexEnginesExecutor:
         # Wait for ready signal
         line = node_process.stdout.readline().strip()
         
-        # Send start signal
-        node_process.stdin.write("start\n")
-        node_process.stdin.flush()
+        # Send start signal and get output
+        self.energy_bridge_runner.start(results_file=output_file)
+        stdout, stderr = node_process.communicate(input="start\n")
+        self.energy_bridge_runner.stop()
         
-        # Read output until done
+        # Process output
         output_lines = []
-        while True:
-            line = node_process.stdout.readline().strip()
-            if line == "done":
-                break
-            if not line:
-                # Check if there was an error
-                error = node_process.stderr.read()
-                if error:
-                    break
-            output_lines.append(line)
+        if stdout:
+            lines = stdout.splitlines()
+            for line in lines:
+                if line.strip() and line.strip() != "done":
+                    output_lines.append(line)
+        
+        if stderr:
+            print(f"JavaScript process stderr: {stderr}")
         
         return output_lines
 
-    def run_boost_engine(self):
+    def run_boost_engine(self, output_file):
         """
         Run the regex engine in C++ using Boost.
         """
@@ -164,26 +164,25 @@ class RegexEnginesExecutor:
         # Wait for ready signal
         line = cpp_process.stdout.readline().strip()
         
-        # Send start signal
-        cpp_process.stdin.write("start\n")
-        cpp_process.stdin.flush()
+        # Send start signal and get output
+        self.energy_bridge_runner.start(results_file=output_file)
+        stdout, stderr = cpp_process.communicate(input="start\n")
+        self.energy_bridge_runner.stop()
         
-        # Read output until done
+        # Process output
         output_lines = []
-        while True:
-            line = cpp_process.stdout.readline().strip()
-            if line == "done":
-                break
-            if not line:
-                # Check if there was an error
-                error = cpp_process.stderr.read()
-                if error:
-                    break
-            output_lines.append(line)
-
+        if stdout:
+            lines = stdout.splitlines()
+            for line in lines:
+                if line.strip() and line.strip() != "done":
+                    output_lines.append(line)
+        
+        if stderr:
+            print(f"C++ process stderr: {stderr}")
+        
         return output_lines
     
-    def run_dotnet_engine(self):
+    def run_dotnet_engine(self, output_file):
         """
         Run the regex engine in .NET using csc (C# compiler).
         """
@@ -215,23 +214,21 @@ class RegexEnginesExecutor:
         # Wait for ready signal
         line = dotnet_process.stdout.readline().strip()
         
-        # Send start signal
-        dotnet_process.stdin.write("start\n")
-        dotnet_process.stdin.flush()
+        # Send start signal and get output
+        self.energy_bridge_runner.start(results_file=output_file)
+        stdout, stderr = dotnet_process.communicate(input="start\n")
+        self.energy_bridge_runner.stop()
         
-        # Read output until done
+        # Process output
         output_lines = []
-        while True:
-            line = dotnet_process.stdout.readline().strip()
-            if line == "done":
-                break
-            if not line:
-                # Check if there was an error
-                error = dotnet_process.stderr.read()
-                if error:
-                    break
-            else:
-                output_lines.append(line)
-
+        if stdout:
+            lines = stdout.splitlines()
+            for line in lines:
+                if line.strip() and line.strip() != "done":
+                    output_lines.append(line)
+        
+        if stderr:
+            print(f".NET process stderr: {stderr}")
+        
         return output_lines
     

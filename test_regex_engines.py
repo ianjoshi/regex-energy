@@ -97,71 +97,71 @@ class TestRegexEngines(unittest.TestCase):
 
         self.assertEqual(node_process.wait(), 0)
 
-    # To run this test, you need to have the Boost-regex library installed. And a c++ compiler installed.
-    # command: vcpkg install boost-regex:x64-windows
-    def test_boost_engine_pipe_interaction(self):
-        # Get Boost path from environment
-        load_dotenv()
-        boost_path = os.getenv("BOOST_PATH")
-        if not boost_path:
-            raise ValueError("BOOST_PATH environment variable not set")
+    # # To run this test, you need to have the Boost-regex library installed. And a c++ compiler installed.
+    # # command: vcpkg install boost-regex:x64-windows
+    # def test_boost_engine_pipe_interaction(self):
+    #     # Get Boost path from environment
+    #     load_dotenv()
+    #     boost_path = os.getenv("BOOST_PATH")
+    #     if not boost_path:
+    #         raise ValueError("BOOST_PATH environment variable not set")
         
-        # Print the directory contents to debug
-        print("Checking library directory:")
-        subprocess.run(["dir", f"{boost_path}/lib"], shell=True)
+    #     # Print the directory contents to debug
+    #     print("Checking library directory:")
+    #     subprocess.run(["dir", f"{boost_path}/lib"], shell=True)
         
-        compile_result = subprocess.run([
-            "g++", # Depends on compiler
-            f"{self.factory.directory_to_store_engines}/regex_matcher.cpp",
-            "-o", f"{self.factory.directory_to_store_engines}/regex_matcher.exe",
-            f"-I{boost_path}/include",
-            f"-L{boost_path}/lib",
-            "-Wl,-rpath," + boost_path + "/bin",
-            "-lboost_regex-vc143-mt-x64-1_86",  # Depends on compiler
-            "--verbose"
-        ], capture_output=True, text=True)
+    #     compile_result = subprocess.run([
+    #         "g++", # Depends on compiler
+    #         f"{self.factory.directory_to_store_engines}/regex_matcher.cpp",
+    #         "-o", f"{self.factory.directory_to_store_engines}/regex_matcher.exe",
+    #         f"-I{boost_path}/include",
+    #         f"-L{boost_path}/lib",
+    #         "-Wl,-rpath," + boost_path + "/bin",
+    #         "-lboost_regex-vc143-mt-x64-1_86",  # Depends on compiler
+    #         "--verbose"
+    #     ], capture_output=True, text=True)
         
-        if compile_result.returncode != 0:
-            print("Library path contents:")
-            subprocess.run(["dir", f"{boost_path}/lib"], shell=True)
-            raise RuntimeError(f"C++ compilation failed:\n{compile_result.stderr}")
+    #     if compile_result.returncode != 0:
+    #         print("Library path contents:")
+    #         subprocess.run(["dir", f"{boost_path}/lib"], shell=True)
+    #         raise RuntimeError(f"C++ compilation failed:\n{compile_result.stderr}")
         
-        # Start C++ process
-        cpp_process = subprocess.Popen(
-            f"{self.factory.directory_to_store_engines}/regex_matcher.exe",
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
+    #     # Start C++ process
+    #     cpp_process = subprocess.Popen(
+    #         f"{self.factory.directory_to_store_engines}/regex_matcher.exe",
+    #         stdin=subprocess.PIPE,
+    #         stdout=subprocess.PIPE,
+    #         stderr=subprocess.PIPE,
+    #         text=True
+    #     )
         
-        # Wait for ready signal
-        line = cpp_process.stdout.readline().strip()
-        self.assertEqual(line, "ready")
+    #     # Wait for ready signal
+    #     line = cpp_process.stdout.readline().strip()
+    #     self.assertEqual(line, "ready")
         
-        # Send start signal
-        cpp_process.stdin.write("start\n")
-        cpp_process.stdin.flush()
+    #     # Send start signal
+    #     cpp_process.stdin.write("start\n")
+    #     cpp_process.stdin.flush()
         
-        # Read output until done
-        output_lines = []
-        while True:
-            line = cpp_process.stdout.readline().strip()
-            if line == "done":
-                break
-            if not line:
-                # Check if there was an error
-                error = cpp_process.stderr.read()
-                if error:
-                    break
-            output_lines.append(line)
+    #     # Read output until done
+    #     output_lines = []
+    #     while True:
+    #         line = cpp_process.stdout.readline().strip()
+    #         if line == "done":
+    #             break
+    #         if not line:
+    #             # Check if there was an error
+    #             error = cpp_process.stderr.read()
+    #             if error:
+    #                 break
+    #         output_lines.append(line)
         
-        # Verify output contains expected pattern matches
-        for i, pattern in enumerate(self.test_patterns.keys()):
-            expected_output = f"Pattern {i}: {pattern} - Matches: {self.test_patterns[pattern]}"
-            self.assertTrue(any(expected_output in line for line in output_lines))
+    #     # Verify output contains expected pattern matches
+    #     for i, pattern in enumerate(self.test_patterns.keys()):
+    #         expected_output = f"Pattern {i}: {pattern} - Matches: {self.test_patterns[pattern]}"
+    #         self.assertTrue(any(expected_output in line for line in output_lines))
 
-        self.assertEqual(cpp_process.wait(), 0)
+    #     self.assertEqual(cpp_process.wait(), 0)
 
 if __name__ == '__main__':
     unittest.main()

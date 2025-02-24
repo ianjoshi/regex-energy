@@ -1,10 +1,14 @@
 import time
 import random
+import os
 from energibridge_executor import EnergibridgeExecutor
 from run_regex_engines import RegexEnginesExecutor
+from pyEnergiBridge.api import EnergiBridgeRunner
 
 # Define the engines, file sizes, and regex patterns to be used in the experiment
-engines = ["engine_dotnet", "engine_java", "engine_js", "engine_cpp"]
+# engines = ["engine_dotnet", "engine_java", "engine_js", "engine_cpp"]
+engines = ["engine_js"]
+
 file_sizes = ["large"]
 regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
 
@@ -37,9 +41,13 @@ class EnergyExperiment:
         self.regex_complexities = regex_complexities
 
         self.energibridge = EnergibridgeExecutor(max_measurement_duration=measurement_duration)
+        self.energibridge_runner = EnergiBridgeRunner(max_duration=measurement_duration)
 
         # Dictionary mapping task names to functions for experiment
         self.tasks = {}
+        
+        # Create results directory if it doesn't exist
+        os.makedirs("results", exist_ok=True)
 
     def generate_tasks(self):
         """
@@ -49,8 +57,15 @@ class EnergyExperiment:
             for file_size in self.file_sizes:
                 for regex_complexity in self.regex_complexities.keys():
                     task_name = f"{engine}_{file_size}_{regex_complexity}"
+                    output_file = f"results/{task_name}.csv"
                     # Create a task with the corresponding parameters
-                    self.tasks[task_name] = lambda e=engine, f=file_size, r=regex_complexities[regex_complexity]: regex_matching(e, f, r)
+                    self.tasks[task_name] = lambda e=engine, f=file_size, r=regex_complexities[regex_complexity], output_file=None: self.regex_matching(
+                        e,
+                        f, 
+                        r,
+                        output_file
+                    )
+                    
 
     def run_experiment(self):
         """
@@ -65,7 +80,7 @@ class EnergyExperiment:
             raise ValueError("No tasks have been set.")
 
         self._warn_and_prepare()
-        self._warmup_fibonacci()
+        # self._warmup_fibonacci()
         self.energibridge.start_service()
 
         # Create a list of (task_name, task_function, run_index) tuples for shuffling
@@ -77,10 +92,7 @@ class EnergyExperiment:
             output_file = f"results/{task_name}_run_{run_id}.csv"
 
             # Execute the task
-            task_func()
-
-            # Run energy measurement
-            self.energibridge.run_measurement(output_file=output_file)
+            task_func(output_file=output_file)
 
             # Rest between runs except for the last iteration
             if run_index < len(task_run_list):
@@ -123,36 +135,40 @@ class EnergyExperiment:
             a, b = b, a + b
         return b
     
-def regex_matching(engine, file_size, regex_pattern):
-    """
-    Perform regex matching using the specified engine, corpus file size, and regex pattern.
-    """
-    
-    # Retrieve the corpus file based on the file size
-    corpus = f"data/{file_size}.txt"
+    def regex_matching(self, engine, file_size, regex_pattern, output_file = None):
+        """
+        Perform regex matching using the specified engine, corpus file size, and regex pattern.
+        """
+        if output_file is None:
+            print("No output file provided, using default name")
+            output_file = f"results/{engine}_{file_size}_{regex_pattern}.csv"
 
-    # Create an instance of the RegexEnginesExecutor
-    regex_engine_executor = RegexEnginesExecutor(
-        regex_engine=engine,
-        corpus=corpus,
-        pattern=regex_pattern
-    )
+        # Retrieve the corpus file based on the file size
+        corpus = f"data/{file_size}.txt"
 
-    # Set up the regex engine
-    regex_engine_executor.setUp()
+        # Create an instance of the RegexEnginesExecutor
+        regex_engine_executor = RegexEnginesExecutor(
+            regex_engine=engine,
+            corpus=corpus,
+            pattern=regex_pattern,
+            energy_bridge_runner=self.energibridge_runner
+        )
 
-    # Retrieve the method name from the dictionary and call it dynamically
-    method_name = RegexEnginesExecutor.engine_methods.get(engine)
-    if method_name is None:
-        raise ValueError(f"Unknown regex engine: {engine}")
+        # Set up the regex engine
+        regex_engine_executor.setUp()
 
-    # Call the method dynamically using `getattr`
-    output = getattr(regex_engine_executor, method_name)()
-    print("Found matches:", output)
+        # Retrieve the method name from the dictionary and call it dynamically
+        method_name = RegexEnginesExecutor.engine_methods.get(engine)
+        if method_name is None:
+            raise ValueError(f"Unknown regex engine: {engine}")
 
-    # regex_engine_executor.tearDown()
+        # Call the method dynamically using `getattr`
+        output = getattr(regex_engine_executor, method_name)(output_file)
+        print("Found matches:", output)
 
-    return output
+        # regex_engine_executor.tearDown()
+
+        return output
 
 if __name__ == "__main__":
     experiment = EnergyExperiment()
