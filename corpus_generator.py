@@ -15,13 +15,11 @@ class CorpusGenerator:
         Initialises the CorpusGenerator.
 
         Args:
-            output_dir (str): Directory where the .txt files will be saved.
+            output_dir (str): Directory where the .txt file will be saved.
         """
         self.urls = {
-            # Include the raw URLs of the Python files to fetch
-            'small.txt' : 'https://raw.githubusercontent.com/huggingface/transformers/refs/heads/main/examples/pytorch/text-classification/run_glue.py',
-            'medium.txt' : 'https://raw.githubusercontent.com/pytorch/pytorch/refs/heads/main/torch/nn/functional.py',
-            'large.txt' : 'https://raw.githubusercontent.com/numpy/numpy/refs/heads/main/numpy/_core/tests/test_multiarray.py'
+            # Include the raw URL of the Python file to fetch
+            'corpus.txt' : 'https://raw.githubusercontent.com/numpy/numpy/refs/heads/main/numpy/_core/tests/test_multiarray.py'
         }
         self.output_dir = output_dir
         # Create the directory if it does not exist
@@ -31,10 +29,11 @@ class CorpusGenerator:
         """
         Fetches the code from each URL and saves it as a .txt file.
         """
-        for file_size in self.urls.keys():
-            code = self.fetch_url(self.urls[file_size])
-            if code:
-                self.save_to_file(file_size, code)
+        for file_name in self.urls.keys():
+            code = self.fetch_url(self.urls[file_name])
+            amplified_code = self.amplify_code(code)
+            if amplified_code:
+                self.save_to_file(file_name, amplified_code)
 
     def fetch_url(self, url):
         """
@@ -56,6 +55,22 @@ class CorpusGenerator:
         except Exception as e:
             print(f"Error fetching {url}: {e}")
             return None
+        
+    def amplify_code(self, code):
+        """
+        Amplifies the code by repeating it multiple times until the file reaches a size of 100MB.
+
+        Args:
+            code (str): The code to amplify.
+
+        Returns:
+            str: The amplified code.
+        """
+        target_size = 100 * 1024 * 1024
+        amplified_code = code
+        while len(amplified_code) < target_size:
+            amplified_code += code
+        return amplified_code
 
     def save_to_file(self, file_name, content):
         """

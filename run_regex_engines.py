@@ -11,7 +11,6 @@ class RegexEnginesExecutor:
 
     # Dictionary to map the engine name to the method to execute
     engine_methods = {
-        "engine_py": "run_python_engine",
         "engine_java": "run_java_engine",
         "engine_js": "run_javascript_engine",
         "engine_cpp": "run_boost_engine",
@@ -36,6 +35,44 @@ class RegexEnginesExecutor:
             filepath_to_corpus=self.corpus
         )
         self.factory.create_engines()
+
+        # Load the Boost path from the environment
+        load_dotenv()
+        boost_path = os.getenv("BOOST_PATH")
+        if not boost_path:
+            raise RuntimeError("BOOST_PATH environment variable not set.")
+
+        # Compile C++ code
+        compile_result_boost = subprocess.run([
+            "g++",
+            f"{self.factory.directory_to_store_engines}/regex_matcher.cpp",
+            "-o", f"{self.factory.directory_to_store_engines}/regex_matcher.exe",
+            f"-I{boost_path}/include",
+            f"-L{boost_path}/lib",
+            "-Wl,-rpath," + boost_path + "/bin",
+            "-lboost_regex-vc143-mt-x64-1_86",  # Exact library name without 'lib' prefix and '.dll.a' suffix
+            "--verbose"
+        ], capture_output=True, text=True)
+        
+        # Check if compilation was successful
+        if compile_result_boost.returncode != 0:
+            print("Library path contents:")
+            subprocess.run(["dir", f"{boost_path}/lib"], shell=True)
+            raise RuntimeError(f"C++ compilation failed:\n{compile_result_boost.stderr}")
+        
+        # Compile the C# code using csc
+        compile_result_dotnet = subprocess.run(
+            ["csc",
+             "-out:"
+             + os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.exe"),
+             os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.cs")],
+            capture_output=True,
+            text=True
+        )
+        
+        # Check if compilation was successful
+        if compile_result_dotnet.returncode != 0:
+            raise RuntimeError(f".NET compilation failed:\n{compile_result_dotnet.stderr}")
 
     def tearDown(self):
         """
@@ -128,30 +165,6 @@ class RegexEnginesExecutor:
         """
         Run the regex engine in C++ using Boost.
         """
-        # Load the Boost path from the environment
-        load_dotenv()
-        boost_path = os.getenv("BOOST_PATH")
-        if not boost_path:
-            raise RuntimeError("BOOST_PATH environment variable not set.")
-        
-        # Compile C++ code
-        compile_result = subprocess.run([
-            "g++",
-            f"{self.factory.directory_to_store_engines}/regex_matcher.cpp",
-            "-o", f"{self.factory.directory_to_store_engines}/regex_matcher.exe",
-            f"-I{boost_path}/include",
-            f"-L{boost_path}/lib",
-            "-Wl,-rpath," + boost_path + "/bin",
-            "-lboost_regex-vc143-mt-x64-1_86",  # Exact library name without 'lib' prefix and '.dll.a' suffix
-            "--verbose"
-        ], capture_output=True, text=True)
-        
-        # Check if compilation was successful
-        if compile_result.returncode != 0:
-            print("Library path contents:")
-            subprocess.run(["dir", f"{boost_path}/lib"], shell=True)
-            raise RuntimeError(f"C++ compilation failed:\n{compile_result.stderr}")
-        
         # Start C++ process
         cpp_process = subprocess.Popen(
             f"{self.factory.directory_to_store_engines}/regex_matcher.exe",
@@ -187,20 +200,6 @@ class RegexEnginesExecutor:
         """
         Run the regex engine in .NET using csc (C# compiler).
         """
-        # Compile the C# code using csc
-        compile_result = subprocess.run(
-            ["csc",
-             "-out:"
-             + os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.exe"),
-             os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.cs")],
-            capture_output=True,
-            text=True
-        )
-        
-        # Check if compilation was successful
-        if compile_result.returncode != 0:
-            raise RuntimeError(f".NET compilation failed:\n{compile_result.stderr}")
-        
         # Start the .NET process
         dotnet_process = subprocess.Popen(
             [os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.exe"),

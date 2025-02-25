@@ -1,17 +1,12 @@
+import os
 import time
 import random
 from energibridge_executor import EnergibridgeExecutor
-from run_regex_engines import RegexEnginesExecutor
 
 # Define the engines, file sizes, and regex patterns to be used in the experiment
 engines = ["engine_dotnet", "engine_java", "engine_js", "engine_cpp"]
 file_sizes = ["large"]
 regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
-
-# Small example for testing
-# engines = ["engine_py"]
-# file_sizes = ["test_corpus"]
-# regex_complexities = {"complexity_low": r"Pickles", "complexity_medium": r"\b[Pp]ick(?!les)\w*\b", "complexity_high": r"[^.?!]*\b\w+'s\b[^.?!]*[.?!]"}
 
 class EnergyExperiment:
     """
@@ -19,7 +14,7 @@ class EnergyExperiment:
     The experiment includes a warm-up phase, task execution, and rest periods between runs.
     """
 
-    def __init__(self, num_runs=30, warmup_duration=300, rest_duration=60, measurement_duration=10, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
+    def __init__(self, num_runs=30, warmup_duration=300, rest_duration=60, engines=engines, file_sizes=file_sizes, regex_complexities=regex_complexities):
         """
         Initializes the experiment with the necessary parameters.
 
@@ -27,7 +22,6 @@ class EnergyExperiment:
         - num_runs (int): Number of times each task should be executed.
         - warmup_duration (int): Warm-up period (in seconds) before measurements.
         - rest_duration (int): Rest period (in seconds) between runs.
-        - measurement_duration (int): Maximum duration of each measurement in seconds.
         """
         self.num_runs = num_runs
         self.warmup_duration = warmup_duration
@@ -36,21 +30,28 @@ class EnergyExperiment:
         self.file_sizes = file_sizes
         self.regex_complexities = regex_complexities
 
-        self.energibridge = EnergibridgeExecutor(max_measurement_duration=measurement_duration)
+        self.energibridge = EnergibridgeExecutor()
 
-        # Dictionary mapping task names to functions for experiment
+        # Dictionary of tasks for experiment
         self.tasks = {}
 
     def generate_tasks(self):
         """
-        Generates a combination of all possible tasks for the experiment.
+        Generates a combination of all possible tasks for the experiment,
+        and writes each as a separate .py file in the 'tasks' folder.
         """
+        # Ensure we have a tasks/ folder
+        if not os.path.exists("tasks"):
+            os.makedirs("tasks")
+
+        # Create tasks for each combination of engine, file size, and regex complexity
         for engine in self.engines:
             for file_size in self.file_sizes:
-                for regex_complexity in self.regex_complexities.keys():
+                for regex_complexity, pattern in self.regex_complexities.items():
                     task_name = f"{engine}_{file_size}_{regex_complexity}"
-                    # Create a task with the corresponding parameters
-                    self.tasks[task_name] = lambda e=engine, f=file_size, r=regex_complexities[regex_complexity]: regex_matching(e, f, r)
+
+                    # Store task in list
+                    self.tasks[task_name] = (f"data/{file_size}.txt", engine, rf"{pattern}")
 
     def run_experiment(self):
         """
@@ -66,21 +67,22 @@ class EnergyExperiment:
 
         self._warn_and_prepare()
         self._warmup_fibonacci()
+
         self.energibridge.start_service()
 
-        # Create a list of (task_name, task_function, run_index) tuples for shuffling
-        task_run_list = [(name, func, i + 1) for name, func in self.tasks.items() for i in range(self.num_runs)]
+        # Create a list of (task_name, task, run_index) tuples for shuffling
+        task_run_list = [(name, task, i + 1) for name, task in self.tasks.items() for i in range(self.num_runs)]
         random.shuffle(task_run_list)  # Shuffle task execution order
 
-        for run_index, (task_name, task_func, run_id) in enumerate(task_run_list, 1):
+        for run_index, (task_name, (corpus, engine, pattern), run_id) in enumerate(task_run_list, 1):
             print(f"----- Run {run_index} (Task: {task_name}, Instance: {run_id}) -----")
             output_file = f"results/{task_name}_run_{run_id}.csv"
 
-            # Execute the task
-            task_func()
+            # Prepare regex matching task
+            self.energibridge.prepare_task(corpus=corpus, engine=engine, pattern=pattern)
 
-            # Run energy measurement
-            self.energibridge.run_measurement(output_file=output_file)
+            # Run energy measurement with task
+            self.energibridge.run_measurement(corpus=corpus, engine=engine, pattern=pattern, output_file=output_file)
 
             # Rest between runs except for the last iteration
             if run_index < len(task_run_list):
@@ -122,38 +124,3 @@ class EnergyExperiment:
         for _ in range(2, n + 1):
             a, b = b, a + b
         return b
-    
-def regex_matching(engine, file_size, regex_pattern):
-    """
-    Perform regex matching using the specified engine, corpus file size, and regex pattern.
-    """
-    
-    # Retrieve the corpus file based on the file size
-    corpus = f"data/{file_size}.txt"
-
-    # Create an instance of the RegexEnginesExecutor
-    regex_engine_executor = RegexEnginesExecutor(
-        regex_engine=engine,
-        corpus=corpus,
-        pattern=regex_pattern
-    )
-
-    # Set up the regex engine
-    regex_engine_executor.setUp()
-
-    # Retrieve the method name from the dictionary and call it dynamically
-    method_name = RegexEnginesExecutor.engine_methods.get(engine)
-    if method_name is None:
-        raise ValueError(f"Unknown regex engine: {engine}")
-
-    # Call the method dynamically using `getattr`
-    output = getattr(regex_engine_executor, method_name)()
-    print("Found matches:", output)
-
-    # regex_engine_executor.tearDown()
-
-    return output
-
-if __name__ == "__main__":
-    experiment = EnergyExperiment()
-    experiment.run_experiment()
