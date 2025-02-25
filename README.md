@@ -21,8 +21,8 @@ By utilising this repository you should be able to replicate our study and confi
 ## Setup Environment
 0. Clone this repository:
    ```bash
-   git clone <repository-url>
-   cd <repository-name>
+   git clone https://github.com/ianjoshi/sustainablese-g1-p1.git
+   cd sustainable-g1-pi
    ```
 
 1. Set up Python environment (choose one method):
