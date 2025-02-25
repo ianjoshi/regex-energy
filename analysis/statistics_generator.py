@@ -147,7 +147,7 @@ class StatisticsGenerator:
         - Tuple[List[float], int]: A list of values with outliers removed and their count.
         """
         if len(values) < 3:
-            return 0
+            return values, 0
 
         mean_val = statistics.mean(values)
         stdev_val = statistics.pstdev(values)
@@ -165,7 +165,7 @@ class StatisticsGenerator:
         - Tuple[List[float], int]: A list of values with outliers removed and their count.
         """
         if len(values) < 4:
-            return 0
+            return values, 0
 
         q1 = self._percentile(values, 25)
         q3 = self._percentile(values, 75)

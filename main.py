@@ -1,5 +1,7 @@
 from corpus_generator import CorpusGenerator
 from energy_experiment import EnergyExperiment
+from analysis.energy_analysis import EnergyAnalysis
+
 
 if __name__ == "__main__":
 
@@ -14,3 +16,9 @@ if __name__ == "__main__":
     
     # Run the experiment with default parameters
     experiment.run_experiment()
+
+    # Create an instance of the energy analysis
+    analysis = EnergyAnalysis()
+
+    # Run the energy analysis
+    analysis.run()

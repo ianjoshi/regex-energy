@@ -5,7 +5,7 @@ from energibridge_executor import EnergibridgeExecutor
 
 # Define the engines, file sizes, and regex patterns to be used in the experiment
 engines = ["engine_dotnet", "engine_java", "engine_js", "engine_cpp"]
-file_sizes = ["large"]
+file_sizes = ["corpus"]
 regex_complexities = {"complexity_low": r"def", "complexity_medium": r"\bclass\s+\w+", "complexity_high": r"(?<=def\s)\w+(?=\()"}
 
 class EnergyExperiment:
