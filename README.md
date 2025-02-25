@@ -1,5 +1,7 @@
-# SustainableSE Group 1 Project 1
-This repository is home to the Project 1 source code of Group 1, for the [Sustainable Software Engineering](https://studiegids.tudelft.nl/a101_displayCourse.do?course_id=70145) course at TU Delft. The core purpose of this source code is to analyse Eneregy Consumption of Regular Expression (RegEx) engines, commonly used by modern IDEs.
+# How Energy Efficient is `ctrl-f` in your favourite IDE/Text-Editor? 
+This repository is home to the Project 1 source code of Group 1, for the 2024-2025 edition of [Sustainable Software Engineering](https://luiscruz.github.io/course_sustainableSE/2025/) course at TU Delft. The core purpose of this source code is to analyse Eneregy Consumption of Regular Expression (RegEx) engines, commonly used by modern IDEs and text editors.
+
+By utilising this repository you should be able to replicate our study and confirm or contradict our findings.
 
 ## Table of Contents
 - [Setup Environment](#setup-environment)
