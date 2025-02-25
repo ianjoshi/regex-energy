@@ -13,7 +13,7 @@ class StatisticsGenerator:
     Saves results to 'stats.txt' file in the specified results directory.
     """
 
-    def __init__(self, records: List[EnergyRecord], results_dir: str = "results"):
+    def __init__(self, records: List[EnergyRecord], results_dir: str = "results", outlier_method: str = "zscore"):
         """
         Parameters:
         - records (List[EnergyRecord]): A list of EnergyRecord objects with time-energy measurements.
@@ -21,6 +21,7 @@ class StatisticsGenerator:
         """
         self.records = records
         self.results_dir = results_dir
+        self.outlier_method = outlier_method
 
     def generate(self) -> None:
         """
@@ -32,6 +33,8 @@ class StatisticsGenerator:
         # Group records by engine and regex_complexity
         grouped_records = self._group_records_by_engine_and_complexity()
 
+        valid_records = []
+
         # Generate and write stats
         with open(results_file_path, "w", encoding="utf-8") as file:
             for (engine, complexity), recs in grouped_records.items():
@@ -41,9 +44,16 @@ class StatisticsGenerator:
                 times = [r.time for r in recs]
                 energies = [r.energy for r in recs]
 
+                if self.outlier_method == "zscore":
+                    times_filtered, times_outliers = self.__remove_outliers_zscore(times)
+                    energies_filtered, energies_outliers = self.__remove_outliers_zscore(energies)
+                elif self.outlier_method == "iqr":
+                    times_filtered, times_outliers = self._remove_outliers_iqr(times)
+                    energies_filtered, energies_outliers = self._remove_outliers_iqr(energies)
+
                 # Compute statistics
-                time_stats, time_outliers_count = self._compute_stats(times)
-                energy_stats, energy_outliers_count = self._compute_stats(energies)
+                time_stats = self._compute_stats(times_filtered)
+                energy_stats = self._compute_stats(energies_filtered)
 
                 # Build final results structure
                 final_results = {
@@ -54,8 +64,13 @@ class StatisticsGenerator:
                 # Write to file
                 file.write(json.dumps(final_results, indent=2))
                 file.write("\n")
-                file.write(f"Outliers for time: {time_outliers_count}\n")
-                file.write(f"Outliers for energy: {energy_outliers_count}\n\n")
+                file.write(f"Outliers for time: {times_outliers}\n")
+                file.write(f"Outliers for energy: {energies_outliers}\n\n")
+
+                # Add valid records
+                valid_records.extend([r for r in recs if r.time in times_filtered and r.energy in energies_filtered])
+
+        return valid_records
 
     def _group_records_by_engine_and_complexity(self) -> Dict[Tuple[str, str], list]:
         """
@@ -68,7 +83,7 @@ class StatisticsGenerator:
         for record in self.records:
             key = (record.engine, record.regex_complexity)
             grouped.setdefault(key, []).append(record)
-        return grouped
+        return grouped        
 
     def _compute_stats(self, values: List[float]) -> Tuple[Dict[str, float], int]:
         """
@@ -108,9 +123,6 @@ class StatisticsGenerator:
         else:
             shapiro_pvalue = None
 
-        # Count outliers
-        outliers_count = self._count_outliers_iqr(values)
-
         stats_dict = {
             "shapiro-pvalue": shapiro_pvalue,
             "mean": mean_val,
@@ -122,17 +134,35 @@ class StatisticsGenerator:
             "75p": q3
         }
 
-        return stats_dict, outliers_count
-
-    def _count_outliers_iqr(self, values: List[float]) -> int:
+        return stats_dict
+    
+    def __remove_outliers_zscore(self, values: List[float]) -> Tuple[List[float], int]:
         """
-        Counts how many outliers are there.
+        Removes the outliers from the records.
 
         Paramaters:
         - values (List[float]): A list of numeric values.
 
         Returns:
-        - (int) The number of outliers.
+        - Tuple[List[float], int]: A list of values with outliers removed and their count.
+        """
+        if len(values) < 3:
+            return 0
+
+        mean_val = statistics.mean(values)
+        stdev_val = statistics.pstdev(values)
+        filtered_values = [v for v in values if abs(v - mean_val) <= 3 * stdev_val]
+        return filtered_values, len(values) - len(filtered_values)
+
+    def _remove_outliers_iqr(self, values: List[float]) -> Tuple[List[float], int]:
+        """
+        Removes the outliers from the records.
+
+        Paramaters:
+        - values (List[float]): A list of numeric values.
+
+        Returns:
+        - Tuple[List[float], int]: A list of values with outliers removed and their count.
         """
         if len(values) < 4:
             return 0
@@ -143,8 +173,8 @@ class StatisticsGenerator:
         lower_bound = q1 - 1.5 * iqr
         upper_bound = q3 + 1.5 * iqr
 
-        outliers = [v for v in values if v < lower_bound or v > upper_bound]
-        return len(outliers)
+        filtered_values = [v for v in values if lower_bound <= v <= upper_bound]
+        return filtered_values, len(values) - len(filtered_values)
 
     def _percentile(self, data: List[float], percentile: float) -> float:
         """
