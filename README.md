@@ -22,7 +22,7 @@ By utilising this repository you should be able to replicate our study and confi
 0. Clone this repository:
    ```bash
    git clone https://github.com/ianjoshi/sustainablese-g1-p1.git
-   cd sustainable-g1-pi
+   cd sustainablese-g1-pi
    ```
 
 1. Set up Python environment (choose one method):
