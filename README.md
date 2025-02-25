@@ -1,7 +1,22 @@
 # SustainableSE Group 1 Project 1
-Analysing Eneregy Consumption of commonly used Regular Expression (Regex) engines.
+This repository is home to the Project 1 source code of Group 1, for the [Sustainable Software Engineering](https://studiegids.tudelft.nl/a101_displayCourse.do?course_id=70145) course at TU Delft. The core purpose of this source code is to analyse Eneregy Consumption of Regular Expression (RegEx) engines, commonly used by modern IDEs.
 
-## 0. Setup Environment
+## Table of Contents
+- [Setup Environment](#setup-environment)
+  * [Using venv (Virtual Environment)](#using-venv-virtual-environment)
+  * [Using Conda](#using-conda)
+- [Get Data (TODO)](#get-data)
+- [Verify the different RegEx Engines work](#verify-the-different-regex-engines-work)
+  * [Find what is missing](#find-what-is-missing)
+  * [Install Java Development Kit (JDK)](#install-java-development-kit-jdk)
+  * [Install C++ compiler & Boost-Regex](#install-c-compiler--boost-regex)
+  * [Install Node.js](#install-nodejs)
+- [Run main.py](#run-mainpy)
+- [Get Results](#get-results)
+- [Visualise Results (TODO)](#visualise-results)
+ 
+
+## Setup Environment
 0. Clone this repository:
    ```bash
    git clone <repository-url>
@@ -28,11 +43,13 @@ Analysing Eneregy Consumption of commonly used Regular Expression (Regex) engine
    ```
 
 
+## Get Data
+TODO
 
-## 1. Verify the different Regex Engines work
+## Verify the different RegEx Engines work
 Ensure you are able to run java, node.js, and c++ files from this directory on your computer with the following steps.
 
-### 1.0 Find what is missing
+### Find what is missing
 Run the test file to check if all engines are working:
 ```bash
 python test_regex_engines.py
@@ -63,7 +80,7 @@ Note: You may notice in the `test_regex_engines.py` that the following code snip
 
 These lines you might have to adjust based on the system you're running the script on.
 
-### 1.1 Install Java Development Kit (JDK)
+### Install Java Development Kit (JDK)
 * Windows: https://docs.oracle.com/en/java/javase/22/install/installation-jdk-microsoft-windows-platforms.html
 
 * macOS: https://docs.oracle.com/en/java/javase/22/install/installation-jdk-macos.html
@@ -71,7 +88,7 @@ These lines you might have to adjust based on the system you're running the scri
 * Linux: https://docs.oracle.com/en/java/javase/22/install/installation-jdk-linux-platforms.html
 
 
-### 1.2 Install C++ compiler & Boost-Regex
+### Install C++ compiler & Boost-Regex
 You have a few options in terms of the compiler you choose to install here. And this will affect the exact install of the boost-regex library.
 
 **Compilers:**
@@ -126,14 +143,17 @@ If TDM-GCC is compiler: run
 vcpkg install boost-regex:x64-mingw-dynamic
 ```
 
-### 1.3 Install Node.js
+### Install Node.js
 Go to: https://nodejs.org/en/download
 
-## 2. Ensure Energybridge is correctly configured
-TODO
-
-## 3. Run `main.py`
+## Run `main.py`
 Finally you can run the experiment by running:
 ```bash
 python main.py
 ```
+
+## Get Results
+When running `main.py`, results will be generated in the results directory.
+
+## Visualise Results
+TODO
