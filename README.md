@@ -168,8 +168,8 @@ When running `main.py`, results will be generated in the `results/` directory.
     <th>Low Complexity Time</th>
   </tr>
   <tr>
-    <td><img src="results_final/plots/violin_energy_low.png" alt="violin_energy_low"></td>
-    <td><img src="results_final/plots/violin_time_low.png" alt="violin_time_low"></td>
+    <td><img src="results/plots/violin_energy_low.png" alt="violin_energy_low"></td>
+    <td><img src="results/plots/violin_time_low.png" alt="violin_time_low"></td>
   </tr>
 </table>
 
@@ -179,8 +179,8 @@ When running `main.py`, results will be generated in the `results/` directory.
     <th>Medium Complexity Time</th>
   </tr>
   <tr>
-    <td><img src="results_final/plots/violin_energy_medium.png" alt="violin_energy_medium"></td>
-    <td><img src="results_final/plots/violin_time_medium.png" alt="violin_time_medium"></td>
+    <td><img src="results/plots/violin_energy_medium.png" alt="violin_energy_medium"></td>
+    <td><img src="results/plots/violin_time_medium.png" alt="violin_time_medium"></td>
   </tr>
 </table>
 
@@ -190,7 +190,7 @@ When running `main.py`, results will be generated in the `results/` directory.
     <th>High Complexity Time</th>
   </tr>
   <tr>
-    <td><img src="results_final/plots/violin_energy_high.png" alt="violin_energy_high"></td>
-    <td><img src="results_final/plots/violin_time_high.png" alt="violin_time_high"></td>
+    <td><img src="results/plots/violin_energy_high.png" alt="violin_energy_high"></td>
+    <td><img src="results/plots/violin_time_high.png" alt="violin_time_high"></td>
   </tr>
 </table>
