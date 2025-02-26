@@ -194,3 +194,10 @@ When running `main.py`, results will be generated in the `results/` directory.
     <td><img src="results/plots/violin_time_high.png" alt="violin_time_high"></td>
   </tr>
 </table>
+
+## Authors
+
+- **Marina Escribano Esteban**
+- **Kevin Hoxha**
+- **Inaesh Joshi**
+- **Todor Mladenović**
