@@ -1,4 +1,4 @@
-# How Energy Efficient is `ctrl-f` in your favourite IDE/Text-Editor? 
+# How Energy Efficient is `CTRL+F` in your favourite IDE/Text-Editor? 
 This repository is home to the Project 1 source code of Group 1, for the 2024-2025 edition of [Sustainable Software Engineering](https://luiscruz.github.io/course_sustainableSE/2025/) course at TU Delft. The core purpose of this source code is to analyse Eneregy Consumption of Regular Expression (RegEx) engines, commonly used by modern IDEs and text editors.
 
 By utilising this repository you should be able to replicate our study and confirm or contradict our findings.
@@ -7,7 +7,7 @@ By utilising this repository you should be able to replicate our study and confi
 - [Setup Environment](#setup-environment)
   * [Using venv (Virtual Environment)](#using-venv-virtual-environment)
   * [Using Conda](#using-conda)
-- [Get Data (TODO)](#get-data)
+- [Corpus Data](#corpus-data)
 - [Verify the different RegEx Engines work](#verify-the-different-regex-engines-work)
   * [Find what is missing](#find-what-is-missing)
   * [Install Java Development Kit (JDK)](#install-java-development-kit-jdk)
@@ -45,11 +45,11 @@ By utilising this repository you should be able to replicate our study and confi
    ```
 
 
-## Get Data
-TODO
+## Corpus Data
+To get the corpus data where the engine will run the regex pattern on, `corpus_generator.py` has a variable that takes URLs and downloads the raw code contents. By default, the URLs are set to download the code from the [Numpy multiarray test](https://raw.githubusercontent.com/numpy/numpy/refs/heads/main/numpy/_core/tests/test_multiarray.py). This file is then amplified to create a larger corpus of 100MB, so that the RegEx engines take longer to run and we can better measure the energy consumption.
 
 ## Verify the different RegEx Engines work
-Ensure you are able to run java, node.js, and c++ files from this directory on your computer with the following steps.
+Ensure you are able to run Java, Node.js, C++, and .NET files from this directory on your computer with the following steps.
 
 ### Find what is missing
 Run the test file to check if all engines are working:
@@ -148,6 +148,9 @@ vcpkg install boost-regex:x64-mingw-dynamic
 ### Install Node.js
 Go to: https://nodejs.org/en/download
 
+### Install .NET
+Go to: https://dotnet.microsoft.com/en-us/download
+
 ## Run `main.py`
 Finally you can run the experiment by running:
 ```bash
@@ -155,7 +158,18 @@ python main.py
 ```
 
 ## Get Results
-When running `main.py`, results will be generated in the results directory.
+When running `main.py`, results will be generated in the `results/` directory.
 
 ## Visualise Results
-TODO
+
+| Low Complexity Energy | Low Complexity Time
+|----------------------|----------------------|
+| ![violin_energy_low](results_final\plots\violin_energy_low.png) | ![violin_time_low](results_final\plots\violin_time_low.png) |
+
+| Medium Complexity Energy | Medium Complexity Time |
+|--------------------------|------------------------|
+| ![violin_energy_medium](results_final\plots\violin_energy_medium.png) | ![violin_time_medium](results_final\plots\violin_time_medium.png) |
+
+| High Complexity Energy | High Complexity Time |
+|------------------------|----------------------|
+| ![violin_energy_high](results_final\plots\violin_energy_high.png) | ![violin_time_high](results_final\plots\violin_time_high.png) |
