@@ -24,7 +24,7 @@ class PlotGenerator:
         """
         data = {
             "engine": [r.engine for r in self.records],
-            "regex_complexity": [r.regex_complexity for r in self.records],
+            "regex_complexity": [r.regex_complexity.capitalize() for r in self.records],
             "run": [r.run for r in self.records],
             "time": [r.time for r in self.records],
             "energy": [r.energy for r in self.records],
@@ -104,7 +104,7 @@ class PlotGenerator:
             )
 
             plt.xlabel("Engine")
-            
+
             if metric == "energy":
                 plt.ylabel("Energy (J)")
             else:
