@@ -65,7 +65,8 @@ class PlotGenerator:
                 data=subset,
                 x="engine",
                 y=metric,
-                inner=None, # Turn off interior bars so they don't conflict with boxplot
+                inner=None, # Turn off interior bars so they don't conflict with boxplot,
+                density_norm="width",
                 color="lightblue",
                 saturation=0.5
             )
