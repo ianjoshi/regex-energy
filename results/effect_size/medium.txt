@@ -1,0 +1,83 @@
+=== Effect Size: cpp vs dotnet ===
+{
+  "time": {
+    "mean_diff": 0.8949564102564103,
+    "percent_change": 126.32300888158609,
+    "cohens_d": 11.99168457020586
+  },
+  "energy": {
+    "mean_diff": 23.448821708486612,
+    "percent_change": 130.06352370529697,
+    "cohens_d": 16.89379258713271
+  }
+}
+
+=== Effect Size: cpp vs java ===
+{
+  "time": {
+    "mean_diff": -0.40036263736263744,
+    "percent_change": -19.980311991861562,
+    "cohens_d": -535.5550560938397
+  },
+  "energy": {
+    "mean_diff": -23.885921100995816,
+    "percent_change": -36.543216572376565,
+    "cohens_d": -17.44428596359835
+  }
+}
+
+=== Effect Size: cpp vs js ===
+{
+  "time": {
+    "mean_diff": 1.2025265251989388,
+    "percent_change": 299.9593087112439,
+    "cohens_d": 2006.5358803561346
+  },
+  "energy": {
+    "mean_diff": 29.730614781057348,
+    "percent_change": 253.09215223071405,
+    "cohens_d": 23.98647563415259
+  }
+}
+
+=== Effect Size: dotnet vs java ===
+{
+  "time": {
+    "mean_diff": -1.2953190476190477,
+    "percent_change": -64.64359129742512,
+    "cohens_d": -17.67457766203685
+  },
+  "energy": {
+    "mean_diff": -47.33474280948243,
+    "percent_change": -72.41771211462914,
+    "cohens_d": -44.08165873948114
+  }
+}
+
+=== Effect Size: dotnet vs js ===
+{
+  "time": {
+    "mean_diff": 0.3075701149425286,
+    "percent_change": 76.72056883995639,
+    "cohens_d": 4.234158194860469
+  },
+  "energy": {
+    "mean_diff": 6.281793072570734,
+    "percent_change": 53.475938533833926,
+    "cohens_d": 6.810103235125158
+  }
+}
+
+=== Effect Size: java vs js ===
+{
+  "time": {
+    "mean_diff": 1.6028891625615764,
+    "percent_change": 399.82612862795213,
+    "cohens_d": 2457.1990631152253
+  },
+  "energy": {
+    "mean_diff": 53.616535882053164,
+    "percent_change": 456.4293258473122,
+    "cohens_d": 61.38617259427877
+  }
+}
