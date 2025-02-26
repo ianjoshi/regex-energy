@@ -50,6 +50,18 @@ class PlotGenerator:
         # Create the output directory if it does not exist
         os.makedirs(output_dir, exist_ok=True)
 
+        # Define custom colors for engines
+        palette = {
+            "red": "#FFB3B3",
+            "green": "#B3FFB3",
+            "blue": "#B3D9FF",
+            "yellow": "#FFF3B3"
+        }
+
+        # Get all unique engines and map engines to colors
+        unique_engines = self.df["engine"].unique()
+        engine_palette = {engine: list(palette.values())[i % len(palette)] for i, engine in enumerate(unique_engines)}
+
         # Get all unique complexities
         complexities = self.df["regex_complexity"].unique()
 
@@ -65,10 +77,12 @@ class PlotGenerator:
                 data=subset,
                 x="engine",
                 y=metric,
-                inner=None, # Turn off interior bars so they don't conflict with boxplot,
+                hue="engine",
+                palette=engine_palette,
+                inner=None,
                 density_norm="width",
-                color="lightblue",
-                saturation=0.5
+                saturation=0.7,
+                legend=False
             )
 
             # Overlay boxplot
