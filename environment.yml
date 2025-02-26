@@ -1,4 +1,4 @@
-name: regex_energy_experiment_2
+name: regex_energy_experiment
 channels:
   - conda-forge
   - defaults
