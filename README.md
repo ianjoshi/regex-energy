@@ -1,4 +1,4 @@
-# Comparing Energy Consumption of Popular RegEx Engines in IDEs and Text Editors.
+# Comparing Energy Consumption of Popular RegEx Engines in IDEs and Text Editors
 This repository is home to the Project 1 source code of Group 1, for the 2025 edition of [Sustainable Software Engineering](https://luiscruz.github.io/course_sustainableSE/2025/) course at TU Delft. The core purpose of this source code is to analyse Energy Consumption of Regular Expression (RegEx) engines, commonly used by modern IDEs and text editors.
 
 By utilising this repository you should be able to replicate our study.
