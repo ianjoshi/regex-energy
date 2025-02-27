@@ -51,7 +51,7 @@ To run the experiment, you need to set the following environment variables:
 - `ENERGIBRIDGE_DRIVER_PATH`: Path to the Energibridge driver. This is required for the energy measurements.
 - `BOOST_PATH`: Path to the Boost library. This is required for the C++ Boost RegEx engine. Details on how to download Boost-Regex are provided in the [Verify the different RegEx Engines work](#verify-the-different-regex-engines-work) section.
 
-You can set these environment variables by renaming the `.env.template` file to `.env` in the root directory of the project and filling the following lines:
+You can set these environment variables by renaming the `.env.template` file to `.env` in the root directory of the project and filling in the following lines:
 
 ```bash
 ENERGIBRIDGE_DRIVER_PATH="<PROJECT_ROOT>\energibridge\LibreHardwareMonitor.sys"
@@ -64,7 +64,7 @@ To download the corpus data where the engine will run the regex pattern on, `cor
 **Note**: The corpus data is not included in the repository, due to the large size of the file (100MB). To generate it, run the `corpus_generator.py` script. The corpus data will be stored in the `data/` directory.
 
 ## Verify the different RegEx Engines work
-Ensure you are able to run Java, Node.js, C++, and .NET files from this directory on your computer with the following steps.
+Ensure you are able to run Java, Node.js, C++, and .NET files from this directory on your computer using the following steps.
 
 ### Find what is missing
 Run the test file to check if all engines are working:
@@ -110,7 +110,7 @@ These lines you might have to adjust based on the system you're running the scri
 
 
 ### Install C++ compiler & Boost-Regex
-You have a few options in terms of the compiler you choose to install here. And this will affect the exact install of the boost-regex library.
+You have a few options in terms of the compiler you choose to install here. This will affect the exact installation of the boost-regex library.
 
 **Compilers:**
 
@@ -150,7 +150,7 @@ source ~/.bashrc  # If using bash
 source ~/.zshrc   # If using zsh
 ```
 
-Test if it works in new terminal window:
+Test if it works in a new terminal window:
 ```
 vcpkg version
 ```
@@ -187,12 +187,12 @@ Then, after making sure you followed all the steps described above, you should p
 ```
 
 
-Finally you can run the experiment by running:
+Finally, you can run the experiment by running:
 ```bash
 python main.py
 ```
 
-When running `main.py`, results snd visualisations will be generated in the `results/` directory.
+When running `main.py`, the results and visualisations will be generated in the `results/` directory.
 
 ## Visualisation of Results
 
