@@ -1,21 +1,23 @@
 # How Energy Efficient is `CTRL+F` in your favourite IDE/Text-Editor? 
 This repository is home to the Project 1 source code of Group 1, for the 2025 edition of [Sustainable Software Engineering](https://luiscruz.github.io/course_sustainableSE/2025/) course at TU Delft. The core purpose of this source code is to analyse Energy Consumption of Regular Expression (RegEx) engines, commonly used by modern IDEs and text editors.
 
-By utilising this repository you should be able to replicate our study and confirm or contradict our findings.
+By utilising this repository you should be able to replicate our study.
 
 ## Table of Contents
 - [Setup Environment](#setup-environment)
   * [Using venv (Virtual Environment)](#using-venv-virtual-environment)
   * [Using Conda](#using-conda)
+- [Environment Variables](#environment-variables)
 - [Corpus Data](#corpus-data)
 - [Verify the different RegEx Engines work](#verify-the-different-regex-engines-work)
   * [Find what is missing](#find-what-is-missing)
   * [Install Java Development Kit (JDK)](#install-java-development-kit-jdk)
   * [Install C++ compiler & Boost-Regex](#install-c-compiler--boost-regex)
   * [Install Node.js](#install-nodejs)
-- [Run main.py](#run-mainpy)
-- [Get Results](#get-results)
-- [Visualise Results (TODO)](#visualise-results)
+  * [Install .NET](#install-net)
+- [Run the experiment](#run-the-experiment)
+- [Visualisation of Results](#visualisation-of-results)
+- [Authors](#authors)
  
 
 ## Setup Environment
@@ -44,9 +46,22 @@ By utilising this repository you should be able to replicate our study and confi
    conda activate regex_energy_experiment
    ```
 
+## Environment Variables
+To run the experiment, you need to set the following environment variables:
+- `ENERGIBRIDGE_DRIVER_PATH`: Path to the Energibridge driver. This is required for the energy measurements.
+- `BOOST_PATH`: Path to the Boost library. This is required for the C++ Boost RegEx engine. Details on how to download Boost-Regex are provided in the [Verify the different RegEx Engines work](#verify-the-different-regex-engines-work) section.
+
+You can set these environment variables by renaming the `.env.template` file to `.env` in the root directory of the project and filling the following lines:
+
+```bash
+ENERGIBRIDGE_DRIVER_PATH="<PROJECT_ROOT>\energibridge\LibreHardwareMonitor.sys"
+BOOST_PATH="<BOOST_PATH>"
+```
 
 ## Corpus Data
-To get the corpus data where the engine will run the regex pattern on, `corpus_generator.py` has a variable that takes URLs and downloads the raw code contents. By default, the URLs are set to download the code from the [Numpy multiarray test](https://raw.githubusercontent.com/numpy/numpy/refs/heads/main/numpy/_core/tests/test_multiarray.py). This file is then amplified to create a larger corpus of 100MB, so that the RegEx engines take longer to run and we can better measure the energy consumption.
+To download the corpus data where the engine will run the regex pattern on, `corpus_generator.py` has a variable that takes URLs and downloads the raw code contents. By default, the URLs are set to download the code from the [Numpy multiarray test](https://raw.githubusercontent.com/numpy/numpy/refs/heads/main/numpy/_core/tests/test_multiarray.py). This file is then amplified to create a larger corpus of 100MB, so that the RegEx engines take longer to run and we can better measure the energy consumption.
+
+**Note**: The corpus data is not included in the repository, due to the large size of the file (100MB). To generate it, run the `corpus_generator.py` script. The corpus data will be stored in the `data/` directory.
 
 ## Verify the different RegEx Engines work
 Ensure you are able to run Java, Node.js, C++, and .NET files from this directory on your computer with the following steps.
@@ -57,10 +72,14 @@ Run the test file to check if all engines are working:
 python test_regex_engines.py
 ```
 
-Note: You may notice in the `test_regex_engines.py` that the following code snippet has comments 'Depends on compiler' and 'Depends on vcpkg installation path'. 
+**Note**: You may notice in the `test_regex_engines.py` that the following code snippet has comments 'Depends on compiler' and 'Depends on vcpkg installation path'. 
 ```python
- def test_boost_engine_pipe_interaction(self):
-        boost_path = "C:/dev/vcpkg/installed/x64-mingw-dynamic" # Depends on vcpkg installation path
+    def test_boost_engine_pipe_interaction(self):
+        # Get Boost path from environment
+        load_dotenv()
+        boost_path = os.getenv("BOOST_PATH") # Depends on vcpkg installation path
+        if not boost_path:
+            raise ValueError("BOOST_PATH environment variable not set")
         
         # Print the directory contents to debug
         print("Checking library directory:")
@@ -73,7 +92,7 @@ Note: You may notice in the `test_regex_engines.py` that the following code snip
             f"-I{boost_path}/include",
             f"-L{boost_path}/lib",
             "-Wl,-rpath," + boost_path + "/bin",
-            "-lboost_regex-gcc10-mt-x64-1_86",  # Depends on compiler
+            "-lboost_regex-vc143-mt-x64-1_86",  # Depends on compiler
             "--verbose"
         ], capture_output=True, text=True)
 
@@ -98,8 +117,6 @@ You have a few options in terms of the compiler you choose to install here. And 
 * TDM-GCC: https://jmeubank.github.io/tdm-gcc/download/
 
 * MSVC: https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
-
-* Others: TODO
 
 
 **VCPKG:**
@@ -151,16 +168,33 @@ Go to: https://nodejs.org/en/download
 ### Install .NET
 Go to: https://dotnet.microsoft.com/en-us/download
 
-## Run `main.py`
+## Run the experiment
+First, run the `corpus_generator.py` script to generate the corpus data:
+```bash
+python corpus_generator.py
+```
+
+Then, after making sure you followed all the steps described above, you should put your computer in "Zen Mode", which is described by the following steps:
+
+```md
+1. Close all unnecessary applications.
+2. Kill unnecessary services.
+3. Turn off notifications.
+4. Disconnect any unnecessary hardware.
+5. Disconnect Wi-Fi.
+6. Switch off auto-brightness on your display.
+7. Set room temperature (if possible) to 25°C. Else stabilize room temperature if possible.
+```
+
+
 Finally you can run the experiment by running:
 ```bash
 python main.py
 ```
 
-## Get Results
-When running `main.py`, results will be generated in the `results/` directory.
+When running `main.py`, results snd visualisations will be generated in the `results/` directory.
 
-## Visualise Results
+## Visualisation of Results
 
 <table>
   <tr>
