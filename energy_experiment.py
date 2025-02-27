@@ -76,6 +76,11 @@ class EnergyExperiment:
 
         for run_index, (task_name, (corpus, engine, pattern), run_id) in enumerate(task_run_list, 1):
             print(f"----- Run {run_index} (Task: {task_name}, Instance: {run_id}) -----")
+
+            # If the results folder does not exist, create it
+            if not os.path.exists("results"):
+                os.makedirs("results")
+
             output_file = f"results/{task_name}_run_{run_id}.csv"
 
             # Prepare regex matching task
