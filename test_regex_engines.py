@@ -102,7 +102,7 @@ class TestRegexEngines(unittest.TestCase):
     def test_boost_engine_pipe_interaction(self):
         # Get Boost path from environment
         load_dotenv()
-        boost_path = os.getenv("BOOST_PATH")
+        boost_path = os.getenv("BOOST_PATH") # Depends on vcpkg installation path
         if not boost_path:
             raise ValueError("BOOST_PATH environment variable not set")
         
@@ -162,6 +162,63 @@ class TestRegexEngines(unittest.TestCase):
             self.assertTrue(any(expected_output in line for line in output_lines))
 
         self.assertEqual(cpp_process.wait(), 0)
+
+
+    def test_dotnet_engine_pipe_interaction(self):
+        # Compile the C# code using csc
+        compile_result_dotnet = subprocess.run(
+            ["csc",
+             "-out:"
+             + os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.exe"),
+             os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.cs")],
+            capture_output=True,
+            text=True
+        )
+        
+        # Check if compilation was successful
+        if compile_result_dotnet.returncode != 0:
+            raise RuntimeError(f".NET compilation failed:\n{compile_result_dotnet.stderr}")
+        
+        # Ensure the .NET executable exists
+        dotnet_exe_path = os.path.abspath(f"{self.factory.directory_to_store_engines}/RegexMatcher.exe")
+        self.assertTrue(os.path.exists(dotnet_exe_path), "RegexMatcher.exe not found.")
+
+        # Start the .NET process
+        dotnet_process = subprocess.Popen(
+            [dotnet_exe_path, self.factory.filepath_to_corpus],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        
+        # Wait for ready signal
+        line = dotnet_process.stdout.readline().strip()
+        self.assertEqual(line, "ready")
+        
+        # Send start signal
+        dotnet_process.stdin.write("start\n")
+        dotnet_process.stdin.flush()
+        
+        # Read output until done
+        output_lines = []
+        while True:
+            line = dotnet_process.stdout.readline().strip()
+            if line == "done":
+                break
+            if not line:
+                # Check if there was an error
+                error = dotnet_process.stderr.read()
+                if error:
+                    break
+            output_lines.append(line)
+        
+        # Verify output contains expected pattern matches
+        for i, pattern in enumerate(self.test_patterns.keys()):
+            expected_output = f"Pattern {i}: {pattern} - Matches: {self.test_patterns[pattern]}"
+            self.assertTrue(any(expected_output in line for line in output_lines))
+
+        self.assertEqual(dotnet_process.wait(), 0)
 
 if __name__ == '__main__':
     unittest.main()
