@@ -58,7 +58,7 @@ ENERGIBRIDGE_DRIVER_PATH="<PROJECT_ROOT>\energibridge\LibreHardwareMonitor.sys"
 BOOST_PATH="<BOOST_PATH>"
 ```
 
-**NOTE**: The BOOST_PATH should contain forward slashes in its path (i.e. '/' instead of '\').
+**NOTE**: The BOOST_PATH should contain forward slashes in its path (i.e. `/` instead of `\`).
 
 ## Corpus Data
 To download the corpus data where the engine will run the regex pattern on, `corpus_generator.py` has a variable that takes URLs and downloads the raw code contents. By default, the URLs are set to download the code from the [Numpy multiarray test](https://raw.githubusercontent.com/numpy/numpy/refs/heads/main/numpy/_core/tests/test_multiarray.py). This file is then amplified to create a larger corpus of 100MB, so that the RegEx engines take longer to run and we can better measure the energy consumption.
