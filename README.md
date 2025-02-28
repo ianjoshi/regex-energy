@@ -23,7 +23,7 @@ By utilising this repository you should be able to replicate our study.
 ## Setup Environment
 0. Clone this repository:
    ```bash
-   git clone https://github.com/ianjoshi/sustainablese-g1-p1.git
+   git clone https://github.com/ianjoshi/regex-energy.git
    cd sustainablese-g1-pi
    ```
 
