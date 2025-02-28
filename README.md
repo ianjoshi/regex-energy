@@ -176,7 +176,7 @@ First, run the `corpus_generator.py` script to generate the corpus data:
 python corpus_generator.py
 ```
 
-Then, after making sure you followed all the steps described above, you should put your computer in "Zen Mode", which is described by the following steps:
+Then, after making sure you followed all the steps described above, you should run your IDE as an **Administrator** and put your computer in "Zen Mode", which is described by the following steps:
 
 ```md
 1. Close all unnecessary applications.
