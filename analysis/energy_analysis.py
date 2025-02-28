@@ -21,11 +21,11 @@ class EnergyAnalysis:
         energy_records_with_outliers = energy_records.copy()
 
         # Compute stats
-        stats_generator = StatisticsGenerator(energy_records)
+        stats_generator = StatisticsGenerator(energy_records, outlier_method="iqr")
         filtered_records = stats_generator.generate()
 
         # Compute effect sizes
-        effect_size_generator = EffectSizeGenerator(filtered_records)
+        effect_size_generator = EffectSizeGenerator(filtered_records, parametric=True)
         effect_size_generator.generate()
 
         # Generate plots with outliers
