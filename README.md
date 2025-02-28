@@ -24,7 +24,7 @@ By utilising this repository you should be able to replicate our study.
 0. Clone this repository:
    ```bash
    git clone https://github.com/ianjoshi/regex-energy.git
-   cd sustainablese-g1-pi
+   cd regex-energy
    ```
 
 1. Set up Python environment (choose one method):
